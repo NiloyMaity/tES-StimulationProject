@@ -1,0 +1,879 @@
+%% Please keep the Stimulation Specific Protocol List in MATLAB path.
+%Area=V1 or V4, so AreaFlag= 1 or 2 corresponds to V1 & V4
+%StimulationType={'tDCS','tACS'}
+%condition={'Stim','Sham'};
+%Polarity={'Cathodal','Anodal' or 'SG','FG','Alpha'};
+%Session={'single','dual','dual60'};
+%SessionID={0,1,2}
+
+% Option of selecting LFP and spike electrode is of importance, pending.
+
+function displayStimulationAll(MonkeyName,folderSource,stimulationString, condition, polarityString,session,bandString,SF, Con, Ori,badTrialNameStr)
+
+if ~exist('folderSourceString','var');  folderSource='Z:\Students\Niloy\MonkeyData';        end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Display main options
+% fonts
+fontSizeSmall = 10; fontSizeMedium = 12; fontSizeLarge = 16;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make Panels
+panelHeight = 0.15; panelStartHeight = 0.85;
+dynamicPanelWidth = 0.15; dynamicStartPos = 0.15;
+stimulationPanelWidth = 0.11; stimulationStartPos=0.025;
+timingPanelWidth = 0.15; timingStartPos = 0.625;
+plotOptionsPanelWidth = 0.15; plotOptionsStartPos = 0.79;
+actualplotPanelWidth=0.03; actualplotStartPos=0.96;
+backgroundColor = 'w';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Stimulation panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+stimulationHeight = 0.07; stimulationGap=0.015; stimulationTextWidth = 0.6;
+hstimulationPanel = uipanel('Title','StimType','fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[stimulationStartPos panelStartHeight stimulationPanelWidth panelHeight]);
+
+% Stimulation Type
+uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'Position',[0 1-3*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
+    'Style','text','String','Stimulation Type','FontSize',fontSizeSmall);
+hStimulationType = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [stimulationTextWidth 1-2.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
+    'Style','popup','String',stimulationString,'FontSize',fontSizeSmall-1);
+
+% Polarity
+uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'Position',[0 1-6*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
+    'Style','text','String','Polarity','FontSize',fontSizeSmall);
+hPolarity = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [stimulationTextWidth 1-5.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
+    'Style','popup','String',polarityString,'FontSize',fontSizeSmall-1);
+
+% Session
+uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'Position',[0 1-9*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
+    'Style','text','String','Session','FontSize',fontSizeSmall);
+uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [stimulationTextWidth 1-8.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
+    'Style','popup','String',session,'FontSize',fontSizeSmall-1);
+
+% Choice of Band
+uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'Position',[0 1-12*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
+    'Style','text','String','Band','FontSize',fontSizeSmall);
+hBand = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [stimulationTextWidth 1-11.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
+    'Style','popup','String',bandString,'FontSize',fontSizeSmall-1);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dynamic panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+dynamicHeight = 0.06; dynamicGap=0.015; dynamicTextWidth = 0.6;
+hDynamicPanel = uipanel('Title','Parameters','fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[dynamicStartPos panelStartHeight dynamicPanelWidth panelHeight]);
+
+% Spatial Frequency
+spatialFreqString = getStringFromValues(SF,1);
+uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'Position',[0 1-3*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
+    'Style','text','String','Spatial Freq (CPD)','FontSize',fontSizeSmall);
+hSpatialFreq = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [dynamicTextWidth 1-2.5*(dynamicHeight+dynamicGap) 1-dynamicTextWidth dynamicHeight*3], ...
+    'Style','popup','String',spatialFreqString,'FontSize',fontSizeSmall-1);
+
+% Orientation
+orientationString = getStringFromValues(Ori,1);
+uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'Position',[0 1-6*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
+    'Style','text','String','Orientation (Deg)','FontSize',fontSizeSmall);
+hOrientation = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [dynamicTextWidth 1-5.5*(dynamicHeight+dynamicGap) 1-dynamicTextWidth dynamicHeight*3], ...
+    'Style','popup','String',orientationString,'FontSize',fontSizeSmall-1);
+
+% Contrast
+contrastString = getStringFromValues(Con,1);
+uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'Position',[0 1-9*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
+    'Style','text','String','Contrast (%)','FontSize',fontSizeSmall);
+hContrast = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [dynamicTextWidth 1-8.5*(dynamicHeight+dynamicGap) 1-dynamicTextWidth dynamicHeight*3], ...
+    'Style','popup','String',contrastString,'FontSize',fontSizeSmall-1);
+
+% Analysis Type
+analysisTypeString = 'Firing Rate|delta TF|PAC';
+uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'Position',[0 1-12*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
+    'Style','text','String','Analysis Type','FontSize',fontSizeSmall);
+hAnalysisType = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, 'Position', ...
+    [dynamicTextWidth 1-11.5*(dynamicHeight+dynamicGap) 1-dynamicTextWidth dynamicHeight*3], ...
+    'Style','popup','String',analysisTypeString,'FontSize',fontSizeSmall-1);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Timing panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+timingHeight = 0.05; timingTextWidth = 0.015; timingBoxWidth = 0.6;
+hTimingPanel = uipanel('Title','Timing','fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[timingStartPos panelStartHeight timingPanelWidth panelHeight]);
+
+% signalRange = [-0.2 1];
+baseline = [-0.5 0];
+xRange = [0.25 0.75];
+
+% Signal Range
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-3*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','Parameter','FontSize',fontSizeSmall-1);
+
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0.4+timingTextWidth 1-3*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','text','String','Min','FontSize',fontSizeSmall-1);
+
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0.1+timingBoxWidth 1-3*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','text','String','Max','FontSize',fontSizeSmall-1);
+
+% Baseline
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-7*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','Basline (s)','FontSize',fontSizeSmall-1);
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+timingTextWidth 1-7*timingHeight  0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(baseline(1)),'FontSize',fontSizeSmall-1);
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.1+timingBoxWidth 1-7*timingHeight  0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(baseline(2)),'FontSize',fontSizeSmall-1);
+
+% X Range
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-11*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','X range','FontSize',fontSizeSmall-1);
+hXMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+timingTextWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(xRange(1)),'FontSize',fontSizeSmall-1);
+hXMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.1+timingBoxWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(xRange(2)),'FontSize',fontSizeSmall-1);
+
+% Y Range
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-15*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','Y Range','FontSize',fontSizeSmall-1);
+hYMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+timingTextWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String','0','FontSize',fontSizeSmall-1);
+hYMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.1+timingBoxWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String','1','FontSize',fontSizeSmall-1);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Plot Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotOptionsHeight = 0.1;
+hPlotOptionsPanel = uipanel('Title','Plotting Options','fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[plotOptionsStartPos panelStartHeight plotOptionsPanelWidth panelHeight]);
+
+uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
+    'Position',[0 6*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
+    'Style','pushbutton','String','cla','FontSize',fontSizeMedium, ...
+    'Callback',{@cla_Callback});
+
+% hHoldOn = uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
+%     'Position',[0 3*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
+%     'Style','togglebutton','String','hold on','FontSize',fontSizeMedium, ...
+%     'Callback',{@holdOn_Callback});
+% add rescale all button
+
+uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
+    'Position',[0 0.05*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
+    'Style','pushbutton','String','rescale All','FontSize',fontSizeMedium, ...
+    'Callback',{@rescaleData_Callback});
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% put plot in a separate small button
+actualplotHeight = 1;
+hactualplotPanel = uipanel('Title',[],'fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[actualplotStartPos panelStartHeight actualplotPanelWidth panelHeight]);
+
+uicontrol('Parent',hactualplotPanel,'Unit','Normalized', ...
+    'Position',[0 0 1 actualplotHeight], ...
+    'Style','pushbutton','String','plot','FontSize',fontSizeMedium-1, ...
+    'Callback',{@plotData_Callback});
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Get plot handles
+if strcmp(session,'single')
+    columns=6;
+elseif strcmp(session,'dual')
+    columns=8;
+end
+
+hFR=getPlotHandles(1,columns,[0.025,0.65,0.78 0.15],0.01,0.01,0);
+hAllFR=getPlotHandles(1,1,[0.852,0.65,0.143 0.15],0.01,0.01,0);
+hTF=getPlotHandles(2,columns,[0.025,0.36,0.78 0.27],0.01,0.01,0);
+hAllTF= getPlotHandles(1,1,[0.852,0.36,0.143 0.27],0.01,0.01,0);
+hPAC=getPlotHandles(2,columns,[0.025,0.05,0.78 0.27],0.01,0.01,0);
+hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
+
+%% Plot firing rate
+    function plotData_Callback(~,~)
+        f=get(hSpatialFreq,'val');
+        o=get(hOrientation,'val');
+        c=get(hContrast,'val');
+        analysisType = get(hAnalysisType,'val');
+        StimulationVal= get(hStimulationType,'val');
+        PolarityVal=get(hPolarity,'val');
+        BandFlag=get(hBand,'val');
+
+        %% Construct Protocol List
+        protocolID = strcat(stimulationString{StimulationVal}, '_', polarityString{PolarityVal}, '_', condition, '_', session);
+
+        %% Load Protocol Information
+        expDates = cell(1, 2);
+        protocolNames = cell(1, 2);
+        protocols = cell(1, 2);
+        dates= cell(1, 2);
+        for i=1:2
+            [expDates{i},protocolNames{i},~] = eval(['allProtocols' protocolID{i}]);
+            dates{i}=unique(expDates{i},'stable');
+            ProtN=size(expDates{i},2)./size(dates{i},2); %Gives us the number of Protocols, condition specific
+
+            for day=1:length(dates{i})
+                for n=1:ProtN
+                    protocols{1,i}{day,n}=protocolNames{1,i}{1,n+(day-1)*ProtN}; %This loop rearranges all the protocols in a nice identifiable structure
+                end
+            end
+        end
+
+        folderin= fullfile(folderSource, 'Programs', 'Saved Data', MonkeyName ,strcat(session, '_Stim'),stimulationString{StimulationVal}, badTrialNameStr, condition, polarityString{PolarityVal});
+        [ColCode,titleString,StimblockID]=pickIDs(session);
+        % an electrode deciding loop here, LFP(HighRMS) or Spike(goodResp)
+
+        if analysisType==1
+            normalizeFlag=1;
+            transientFlag=0;
+            FRFlag=1;
+            PSDFlag=0;
+            plothandle1=hFR;
+            plothandle2=hAllFR;
+            for cnd=1:2
+                plotSpikeRate(plothandle1,folderin(cnd),condition(cnd),session,normalizeFlag,dates(cnd),protocols(cnd),f,c,o)
+            end
+            text(-0.45,0.9,append('Session=',num2str(size(dates{1,1},2))),'color','k','FontSize',8,'FontWeight','bold');
+            legend('','Stim','','Sham','Location','northeast')
+            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,BandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
+            title(plothandle2,'\Delta Stim-Sham',FontSize=16)
+        elseif analysisType==2
+            normalizeFlag=1;
+            transientFlag=0;
+            FRFlag=0;
+            PSDFlag=1;
+            plothandle1=hTF;
+            plothandle2=hAllTF;
+            plotTF(plothandle1,folderin,dates,protocols,f,c,o,badTrialNameStr)
+            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,BandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
+        elseif analysisType==3
+            plothandle1=hPAC;
+            plothandle2=hAllPAC;
+            plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,f,c,o,badTrialNameStr,MonkeyName,ColCode,titleString,StimblockID)
+        end
+        for n=1:length(plothandle1)
+            title(hFR(1,n),titleString{1,n},color=ColCode{1,n}{1,1},FontSize=16)
+        end
+    end
+
+
+    function cla_Callback(~,~)
+        claGivenplothandle(hFR);
+        claGivenplothandle(hTF);
+        claGivenplothandle(hPAC);
+        claGivenplothandle(hAllFR);
+        claGivenplothandle(hAllTF);
+        claGivenplothandle(hAllPAC);
+        % cla(hRFMapPlot);cla(hcenterRFMapPlot);
+
+        function claGivenplothandle(plothandle)
+            [numRows,numCols] = size(plothandle);
+            for i=1:numRows
+                for j=1:numCols
+                    cla(plothandle(i,j));
+                end
+            end
+        end
+    end
+
+    function rescaleData_Callback(~,~)
+
+        analysisType = get(hAnalysisType,'val');
+        if analysisType==1
+            plothandle=hFR;
+        elseif analysisType==2
+            plothandle=hTF;
+        elseif analysisType==3
+            plothandle=hPAC;
+        end
+
+        if analysisType<=3 % FR,TF or PAC
+            xMin = str2double(get(hXMin,'String'));
+            xMax = str2double(get(hXMax,'String'));
+            yMin = str2double(get(hYMin,'String'));
+            yMax = str2double(get(hYMax,'String'));
+
+        elseif analysisType==4
+            xMin = str2double(get(hSTAMin,'String'));
+            xMax = str2double(get(hSTAMax,'String'));
+        else
+            xMin = str2double(get(hFFTMin,'String'));
+            xMax = str2double(get(hFFTMax,'String'));
+        end
+
+        rescaleData(plothandle,xMin,xMax,yMin,yMax);
+    end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function rescaleData(plothandle,xMin,xMax,yMin,yMax)
+
+        [numRows,numCols] = size(plothandle);
+        labelSize=12;
+        for i=1:numRows
+            for j=1:numCols
+                axis(plothandle(i,j),[xMin xMax yMin yMax]);
+                if (i==numRows && rem(j,2)==1)
+                    if j~=1
+                        set(plothandle(i,j),'YTickLabel',[],'fontSize',labelSize);
+                    end
+                elseif (rem(i,2)==0 && j==1)
+                    set(plothandle(i,j),'XTickLabel',[],'fontSize',labelSize);
+                else
+                    set(plothandle(i,j),'XTickLabel',[],'YTickLabel',[],'fontSize',labelSize);
+                end
+            end
+        end
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function outString = getStringFromValues(valsUnique,decimationFactor)
+
+if length(valsUnique)==1
+    outString = convertNumToStr(valsUnique(1),decimationFactor);
+else
+    outString='';
+    for i=1:length(valsUnique)
+        outString = cat(2,outString,[convertNumToStr(valsUnique(i),decimationFactor) '|']);
+    end
+    outString = [outString 'all'];
+end
+
+    function str = convertNumToStr(num,f)
+        if num > 16384
+            num=num-32768;
+        end
+        str = num2str(num/f);
+    end
+end
+
+
+%% Spike plotting code%%
+function plotSpikeRate(plothandle,folderin,condition,Session,normalizeFlag,dates,protocols,SFVals,ConVals,OriVals)
+
+if ~exist('SFVals','var'); SFVals=5; end
+if ~exist('ConVals','var'); ConVals=4; end
+if ~exist('OriVals','var'); OriVals=5; end
+
+folderin=cell2mat(folderin);
+if strcmp(condition,'Stim')
+    cnd=1;
+elseif strcmp(condition,'Sham')
+    cnd=2;
+end
+
+% Calling the color grid
+ColCode=pickIDs(Session);
+ColLine={'#ff6f00','#5800FF'};
+clear RawPSTH
+
+%     Collecting the data
+for iProt =1:size(protocols{1,1},2)
+    for j=1:length(SFVals)
+        for k=1:length(OriVals)
+            for l=1:length(ConVals)
+                for day=1:length(dates{1,1})
+                    DataSpike = dir(fullfile(folderin,append(num2str(SFVals(j)),'SF','_',num2str(OriVals(k)),'Ori','_',num2str(ConVals(l)),'Con','_',protocols{1,1}{day,iProt},'_',num2str(dates{1,1}{1,day}),'*PSTH.mat')));
+
+                    % Loading the spike file
+                    if ~isempty(DataSpike)
+                        s1 = load(fullfile(folderin,DataSpike.name)); % DataStructure(field).name
+                        RawPSTH{day,:,:} = s1.PSTHGrid;
+                        SPtList=s1.xs; %Spike timevals
+                    else
+                        RawPSTH{day,:,:} =[];
+                    end
+                end
+                alldayPSTH{j,k,l}=cat(1,RawPSTH{:,1}); %Concatenating across days
+            end
+        end
+    end
+    PSTHData{iProt,:}=mean(cell2mat(permute(alldayPSTH(:),[2 3 1])),3,'omitnan');%Averaging across all condition specific cells
+end
+
+%% Here pulling of all data from required dates has been completed.
+
+for i=1:size(protocols{1,1},2)
+    for n=1:size(PSTHData{1,1},1)
+        maxFR=max(PSTHData{1,1}(n,:)); % takes the max firing rate of the first protocol, per electrode
+        normFRData{i,1}(n,:)=PSTHData{i,1}(n,:)./maxFR;
+    end
+end
+
+% Plot delta shade PSTH plot
+for iProt =1:size(protocols{1,1},2)
+    if normalizeFlag==1
+        DeltaShadeData=normFRData{iProt,:};
+    else
+        DeltaShadeData=PSTHData{iProt,:};
+    end
+    options.handle = plothandle(1,iProt);
+    % options.color_area = ColCode{1,iProt}{1,1};
+    if strcmp(condition,'Stim')
+        options.color_area =[255, 111, 0]./255;
+    elseif strcmp(condition,'Sham')
+        options.color_area =[88, 0, 255]./255;
+    end
+
+    options.alpha      = 0.2;
+    options.error      = 'sem';
+    options.x_axis= SPtList;
+    plot_areaerrorbar(DeltaShadeData, options);hold on;
+    axis(plothandle(1,iProt),[[-0.5 1] [-0.2 1]]);
+end
+
+for iProt=1:size(protocols{1,1},2)
+    if ~isempty(PSTHData{iProt,:})
+        if normalizeFlag==1
+            plot(plothandle(1,iProt),SPtList,mean(normFRData{iProt,:},1,'omitnan'),LineWidth=1.6, color=ColLine{1,cnd});hold (plothandle(1,iProt),'on');
+            if iProt==size(protocols{1,1},2)
+                axes(plothandle(1,iProt))
+            end
+        else
+            plot(plothandle(1,iProt),SPtList,mean(PSTHData{iProt,:},1,'omitnan'),LineWidth=1.6, color=ColCode{1,iProt}{1,2});hold (plothandle(1,iProt),'on');
+            if iProt==size(protocols{1,1},2)
+                axes(plothandle(1,iProt))
+            end
+        end
+    end
+end
+set(plothandle(1,2:end),'ytick',[])
+set(plothandle(1,1:end),'xtick',[])
+end
+
+
+%% TF plotting code %%
+function plotTF(plothandle,folderin,dates,protocols,SFVals,ConVals,OriVals,badTrialNameStr)
+
+if ~exist('SFVals','var'); SFVals=5; end
+if ~exist('ConVals','var'); ConVals=4; end
+if ~exist('OriVals','var'); OriVals=5; end
+
+
+if strcmp(badTrialNameStr,'V1') % We have to have a grid of different range, to comply with con values
+    SGRange={{12 28}, {16,28}, {28,36}, {16,28}};
+    FGRange={{32,44}, {32,48}, {48,68}, {36,52}};
+    cLimsDiff=[-6 10];
+elseif strcmp(badTrialNameStr,'V4')
+    SGRange={{16 28}, {16,28}, {28,40}, {20,40}};
+    FGRange={{32,40}, {32,44}, {60,76}, {52,72}};
+    cLimsDiff=[-8 8];
+end
+
+%% Getting Data
+for c=1:2
+    for iProt =1:size(protocols{1,c},2)
+        for j=1:length(SFVals)
+            for k=1:length(OriVals)
+                for l=1:length(ConVals)
+                    for day=1:length(dates{1,c})
+                        DataTF = dir(fullfile(folderin{1,c},append(num2str(SFVals(j)),'SF','_',num2str(OriVals(k)),'Ori','_',num2str(ConVals(l)),'Con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
+                        % Loading the TF file
+                        d2= load(fullfile(folderin{1,c},DataTF.name)); % DataStructure(field).name
+                        RawTF(day,:,:) = (d2.TFDeltaPow);
+                        tList=d2.tList; % Time frequency list
+                        fList=d2.fList; % Frequency point list
+                    end
+                    allday{j,k,l}=squeeze(mean(RawTF,1,"omitnan"));%Averaging across days took place here
+                end
+            end
+        end
+        TFData(iProt,:,:)=mean(cell2mat(permute(allday(:),[2 3 1])),3);%Averaging across all condition specific cells
+    end
+
+    %% Plot TimeFrequency plot
+    for iProt=1:size(protocols{1,c},2)
+        pcolor(tList,fList,squeeze(TFData(iProt,:,:))','Parent',plothandle(c,iProt));colormap('jet');
+        shading(plothandle(c,iProt),'interp');
+        clim(plothandle(c,iProt),cLimsDiff);
+        axes(plothandle(c,iProt))
+        axis(plothandle(1:2,iProt),[[-0.5 1] [0 100]]);
+        Xax=gca().XAxis;
+        Yax=gca().YAxis;
+        set(gca,'FontWeight','bold');
+        set(Xax,'FontSize',10);
+        set(Yax,'FontSize',10);
+        yline(cell2mat(SGRange{1,ConVals}),"--");
+        yline(cell2mat(FGRange{1,ConVals}),"-");
+    end
+end
+set(plothandle(1,1:size(protocols{1,c},2)),'XTick',[]);
+set(plothandle(2,1:size(protocols{1,c},2)),'XTick',[0 0.5 1]);
+set(plothandle(1:end,2:end),'ytick',[])
+ax=plothandle(2,6);
+cb=colorbar(ax);
+cb.Position=[0.8064 0.359 0.0064 0.1302];
+cb.TickDirection = 'none';
+cb.Ticks = [-6 0 10];
+end
+
+
+%% This code will plot PAC values with Frequency(Phase) in X axis and Frequency(Amplitude) in Y axis
+function plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,SFVals,ConVals,OriVals,badTrialNameStr,MonkeyName,ColCode,titleString,StimblockID)
+% For better visualization: splitting PAC plot into two parts: 2 to 150 Hz and 150Hz to 500Hz
+partitionFreq = [7 157 157 487];
+
+% V1=1:48;
+% V4=49:96;
+% BrainArea={V1,V4};
+nWin=1;
+
+for ses=1:length(StimblockID)
+    ColCode{1,StimblockID(ses)}=[];
+    titleString{1,StimblockID(ses)}=[];
+end
+
+Col=ColCode(~cellfun('isempty',ColCode));
+titl=titleString(~cellfun('isempty',ColCode));
+ColCode=reshape(Col,[1 length(ColCode)-length(StimblockID)]);
+titleString=reshape(titl,[1 length(titleString)-length(StimblockID)]);
+
+
+% rfDataFileName = [MonkeyName 'MicroelectrodeRFData.mat']; %This file is in DataMap/ReceptiveFieldData/{MonkeyName} folder and should be in Matlab's path
+% if exist(rfDataFileName,'file')
+%     tmp = load(rfDataFileName);
+%     electrodesToUse = tmp.highRMSElectrodes;
+% end
+% 
+% % Finding the brain area
+% if strcmp(badTrialNameStr,'V1')
+%     AreaFlag=1;
+% elseif strcmp(badTrialNameStr,'V4')
+%     AreaFlag=2;
+% end
+
+if strcmp(badTrialNameStr,'V1') % We have to have a grid of different range, to comply with con values
+    % SGRange={{12 28}, {16,28}, {28,36}, {16,28}};
+    % FGRange={{32,44}, {32,48}, {48,68}, {36,52}};
+    SGRange={{16 28}, {18,32}, {24,40}, {16,28}};
+    HGRange={{40,88},{50,98},{80,120},{80,120}};
+elseif strcmp(badTrialNameStr,'V4')
+    SGRange={{16 28}, {16,28}, {28,40}, {20,40}};
+end
+
+stimFreqWin = {[SGRange{1,ConVals}  HGRange{1,ConVals}] };
+
+if mod(stimFreqWin{1,nWin}{1},4)==1
+    xFreq1=stimFreqWin{1,nWin}{1}-1;
+elseif mod(stimFreqWin{1,nWin}{1},4)==2
+    xFreq1=stimFreqWin{1,nWin}{1}+2;
+elseif mod(stimFreqWin{1,nWin}{1},4)==3
+    xFreq1=stimFreqWin{1,nWin}{1}+1;
+elseif mod(stimFreqWin{1,nWin}{1},4)==0
+    xFreq1=stimFreqWin{1,nWin}{1};
+end
+
+if mod(stimFreqWin{1,nWin}{2},4)==1
+    xFreq2=stimFreqWin{1,nWin}{2}-1;
+elseif mod(stimFreqWin{1,nWin}{2},4)==2
+    xFreq2=stimFreqWin{1,nWin}{2}+2;
+elseif mod(stimFreqWin{1,nWin}{2},4)==3
+    xFreq2=stimFreqWin{1,nWin}{2}+1;
+elseif mod(stimFreqWin{1,nWin}{2},4)==0
+    xFreq2=stimFreqWin{1,nWin}{2};
+end
+
+% goodElectrodes = intersect(electrodesToUse,BrainArea{1,AreaFlag});
+
+% cLimsDiff = [0 1];   % colormap limits for change in power
+colormap jet
+climVals1=0;
+climVals2=0.00015;
+
+%Pre-defined determinants
+% gridType='Microelectrode';
+removeEvokedResponseFlag=1;
+tapers=[1 1];
+modality='LFP';
+sVarName='sf';
+pacMethod='klmi';
+filterName='fir';
+nSurrogates=0;
+useMPFlag=0;
+
+blGrid=[];
+stGrid=[];
+for c=1:2
+    for day=1:length(dates{1,c})
+        for iProt =1:size(protocols{1,c},2)
+            % if iProt==1
+            %     respFile = fullfile(folderin{1,c},'data',MonkeyName,gridType,dates{1,c}{1,day},protocols{1,c}{day,iProt},'segmentedData', append('GoodUnits',badTrialNameStr,'.mat'));
+            %     if isfile(respFile)
+            %         respFileStruct=load(respFile);
+            %         AllGoodUnit{1,iProt}=respFileStruct.goodSpikeElectrodes;
+            %         AreaGoodUnit{1,iProt}=intersect(BrainArea{1,AreaFlag},AllGoodUnit{1,iProt});
+            %     end
+            % end
+
+            % [~,elecId]=find(ismember(goodElectrodes,respFileStruct.goodSpikeElectrodes));
+
+            %tmpData struc=(Elecnum,numPeriods,Amplitude bins, PhaseBins);
+            tmpData = load(fullfile(folderin{1,c},[MonkeyName dates{1,c}{1,day} protocols{1,c}{day,iProt} '_removeMean' num2str(removeEvokedResponseFlag) '_Tapers' num2str(tapers(1)) '_' num2str(tapers(2)) '_' modality '_' sVarName num2str(SFVals) '_o' num2str(OriVals) '_c' num2str(ConVals) '_' pacMethod '_' filterName '_nSur' num2str(nSurrogates) '_MP' num2str(useMPFlag) badTrialNameStr '.mat']), 'pac','normalisedPac','meanAmp','surrogatePac','tval','pval', 'centerAmpFreq', 'centerPhaseFreq');
+            blGrid{day,iProt}=tmpData.pac(:,1,:,:);
+            xFreqPos = intersect(find(tmpData.centerPhaseFreq>= xFreq1),find(tmpData.centerPhaseFreq<=  xFreq2));
+            yFreqPos = intersect(find(tmpData.centerAmpFreq>= stimFreqWin{1,nWin}{3}),find(tmpData.centerAmpFreq<= stimFreqWin{1,nWin}{4}));
+            stGrid{day,iProt}=tmpData.pac(:,2,:,:);
+            pacSig{c,day,iProt} = squeeze(mean(tmpData.pac(:,2,yFreqPos,xFreqPos),[3,4]));
+        end
+    end
+
+    % Initialize the result as a 1x6 cell array
+    blresult = cell(1, size(protocols{1,c},2));
+    stresult = cell(1, size(protocols{1,c},2));
+
+    % Loop through each column to concatenate along the first dimension
+    for col = 1:size(protocols{1,c},2)
+        blresult{col} = cat(1, blGrid{:, col});
+        stresult{col} = cat(1, stGrid{:, col});
+    end
+
+    avgblResult = cell(1, size(protocols{1,c},2));
+    avgstResult = cell(1, size(protocols{1,c},2));
+
+    % Loop through each cell and compute the mean along the first dimension
+    for col = 1:size(protocols{1,c},2)
+        avgblResult{col} = squeeze(mean(blresult{col}, 1)); % Compute the mean across the 1st dimension (size becomes 1x1x49x17)
+        avgstResult{col} = squeeze(mean(stresult{col}, 1));
+    end
+    freqIdx = find(tmpData.centerAmpFreq == partitionFreq(2));
+    for n=1:size(protocols{1,c},2) % n=Pre or Post
+        pcolor(plothandle1(c,n),tmpData.centerPhaseFreq,tmpData.centerAmpFreq(1:freqIdx),avgstResult{1,n}((1:freqIdx),:)-avgblResult{1,n}((1:freqIdx),:));
+        shading(plothandle1(c,n),'interp');
+        clim(plothandle1(c,n), [climVals1 climVals2]);
+        set(plothandle1(1:2,:),'Yscale','log');
+        set(plothandle1(1:2,:),'Xscale','log');
+        if n==1
+            set(plothandle1(c,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,n),'yTickLabel',[ 10 50 100 150],'FontSize',8,'FontWeight','bold');
+        else
+            set(plothandle1(1,n),'yTick',[150 250 350 450],'FontSize',8,'FontWeight','bold'); set(plothandle1(1,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
+            set(plothandle1(2,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
+        end
+    end
+    if c==1
+        set(plothandle1(1:2,:),'xTickLabel',[])
+    elseif c==2
+        set(plothandle1(2,:),'xTick',[ 5 10 24 40],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,:),'xTickLabel',[ 5 10 24 40],'FontSize',8,'FontWeight','bold')
+    end
+    eleclength=size(stGrid{1,1},1); % for later use
+    clear stGrid blGrid tmpData avgstResult avgblResult
+    % clear plothandle
+end
+ax=plothandle1(2,6);
+cb=colorbar(ax);
+cb.Position=[0.8064 0.0499 0.0064 0.1302];
+cb.Ruler.Exponent = -3;
+cb.Ticks = [0 0.00015];
+cb.TickDirection = 'none';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+numProtocols = size(protocols{1}, 2);
+if strcmp(session,'single')
+    % Initialize the concatenated data array (2x128x6)
+    concatenatedData = zeros(2, eleclength*length(dates{1,c}), numProtocols);
+    data=pacSig;
+    % Iterate over the first and third dimensions
+    for i = 1:2
+        for prot = 1:numProtocols
+            % Extract and concatenate along the second dimension
+            concatenated = cat(2, data{i, :, prot}); % Concatenate across the day cells
+            concatenated = reshape(concatenated, [], 1); % Reshape into 128x1
+            concatenatedData(i, :, prot) = concatenated; % Store in 2x128x6 array
+        end
+    end
+
+    for prot=1:numProtocols
+        St=concatenatedData(1,:,prot);
+        Sh=concatenatedData(2,:,prot);
+        dMI{1,prot}=St-Sh;
+        StError{1,prot}=std(dMI{1,prot})/sqrt(size(dMI{1,prot},2));
+        AvgMI{1,prot}=mean(dMI{1,prot});
+    end
+    point=1:numProtocols-1;
+    AvgMI(2)=[];
+    StError(2)=[];
+    dMI(2)=[];
+
+elseif strcmp(session,'dual')
+    data = pacSig;
+    numStimDays = length(dates{1,1});
+    numShamDays = length(dates{1,2});
+
+    %Concatenate Data
+    for prot = 1:numProtocols
+        stimConcat = reshape(cat(2, data{1, :, prot}), [], 1);
+        shamConcat = reshape(cat(2, data{2, :, prot}), [], 1);
+
+        concatenatedStimData(:, prot) = stimConcat;
+        concatenatedShamData(:, prot) = shamConcat;
+    end
+
+    %Slice Each Day’s Data into Cells
+    for prot = 1:numProtocols
+        % Stim days
+        for d = 1:numStimDays
+            idx = (d-1)*eleclength + 1;
+            U{prot, d} = concatenatedStimData(idx:idx+eleclength-1, prot);
+        end
+        % Sham days
+        for d = 1:numShamDays
+            idx = (d-1)*eleclength + 1;
+            V{prot, d} = concatenatedShamData(idx:idx+eleclength-1, prot);
+        end
+    end
+
+    % Dynamically Average Across Days
+    for prot = 1:numProtocols
+        % Stim: average across all U{prot, :}
+        stimDays = [U{prot, 1:numStimDays}];
+        avg_Stim{prot} = mean(stimDays, 2);
+
+        % Sham: average across all V{prot, :}
+        shamDays = [V{prot, 1:numShamDays}];
+        avg_Sham{prot} = mean(shamDays, 2);
+    end
+
+    % Compute Differences, Std Error, Mean
+    for prot = 1:numProtocols
+        dMI{1, prot} = avg_Stim{prot} - avg_Sham{prot};
+        StError{1, prot} = std(dMI{1, prot}) / sqrt(length(dMI{1, prot}));
+        AvgMI{1, prot} = mean(dMI{1, prot});
+    end
+    point=1:numProtocols-2;
+    AvgMI(2)=[];% making first stimblock(prot=2) zero
+    AvgMI(3)=[];% making second stimblock(prot=4) zero, as it is now 3rd protocol after deletion
+    StError(2)=[];
+    StError(3)=[];
+    dMI(2)=[];
+    dMI(3)=[];
+end
+
+%% Plotting data
+if strcmp(session,'single')
+    numProtocols=numProtocols-1;
+elseif strcmp(session,'dual')
+    numProtocols=numProtocols-2;
+end
+
+for prot=1:numProtocols
+    errorbar(subplot(plothandle2),point(prot),AvgMI{1,prot}-AvgMI{1,1},[StError{1,prot}],'color','#ED4672','LineWidth',1.5);
+    hold on
+end
+
+xlim([0 numProtocols+1]);
+ylim([-5*10^-5 5*10^-5])
+plot(point,cell2mat(AvgMI)-cell2mat(AvgMI(1,1)),'color','#ED4672','LineWidth',1.5);
+yline(0*10^-5,LineWidth=0.8,LineStyle="--")
+
+for prot=1:numProtocols
+    w{1,prot}=AvgMI{1,prot}-AvgMI{1,1};
+    scatter(point(1,prot),w{1,prot},30,ColCode{1, prot}{1, 1},"filled")
+end
+
+
+%% Collecting band specific stats
+for Band=nWin
+    for ProtN=2:numProtocols
+        x1=dMI{1,1};% Post-Pre
+        y1=dMI{1,ProtN};
+        [p1,h1]=ranksum(y1,x1); %This checks if gamma power in a protocol is significantly different than the pre-stim/sham protocol
+
+        if Band==1
+            SGdeltaStat(1,ProtN)=double(h1);
+            SGdeltaStat(2,ProtN)=p1;
+            clear x1 y1 h1 p1
+        elseif Band==2
+            FGdeltaStat(1,ProtN)=double(h1);
+            FGdeltaStat(2,ProtN)=p1;
+            clear x1 y1 h1 p1
+        end
+    end
+end
+%% Plotting the significance star
+for freqstat=nWin %Band specific identity
+    m=[w{:}];
+    Asterixdata=(m);
+    Xcentres=point;
+    hold on
+    if freqstat==1
+        stat1=SGdeltaStat(1,:);
+        stat2=SGdeltaStat(2,:);
+    elseif freqstat==2
+        stat1=FGdeltaStat(1,:);
+        stat2=FGdeltaStat(2,:);
+    end
+
+    delete(findall(subplot(plothandle2(1,1)), 'Tag', 'SigStar'));
+    for d=1:numProtocols
+        if stat1(1,d)==1
+            hold on
+            subplot(plothandle2(1,1))
+            ypoint=(Asterixdata(:,d));
+            if ypoint<0
+                if stat2(1,d)<0.0005
+                    text(Xcentres(:,d)-0.3,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                elseif stat2(1,d)<0.005
+                    text(Xcentres(:,d)-0.2,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                elseif stat2(1,d)<0.05
+                    text(Xcentres(:,d)-0.1,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                end
+            elseif ypoint>0
+                if stat2(1,d)<0.0005
+                    text(Xcentres(:,d)-0.35,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                elseif stat2(1,d)<0.005
+                    text(Xcentres(:,d)-0.25,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                elseif stat2(1,d)<0.05
+                    text(Xcentres(:,d)-0.15,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                end
+            end
+        end
+    end
+end
+
+set(plothandle2(1,1),'XTick',1:length(point));
+xticklabels(titleString);
+line([0 length(point)+1], [5*10^-5 5*10^-5],'color','k')
+line([length(point)+1 length(point)+1], [-5*10^-5 5*10^-5],'color','k')
+end
+
+
