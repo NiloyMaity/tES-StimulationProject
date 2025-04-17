@@ -1,17 +1,16 @@
-%% Please keep the Stimulation Specific Protocol List in MATLAB path.
-%Area=V1 or V4, so AreaFlag= 1 or 2 corresponds to V1 & V4
-%StimulationType={'tDCS','tACS'}
+%% please keep the Stimulation Specific Protocol List in MATLAB path.
+%area=V1 or V4, so AreaFlag= 1 or 2 corresponds to V1 & V4
+%stimulationType={'tDCS','tACS'}
 %condition={'Stim','Sham'};
-%Polarity={'Cathodal','Anodal' or 'SG','FG','Alpha'};
-%Session={'single','dual','dual60'};
-%SessionID={0,1,2}
+%polarity={'Cathodal','Anodal' or 'SG','FG','Alpha'};
+%session={'single','dual','dual60'};
+%sessionID={0,1,2}
 
-% Option of selecting LFP and spike electrode is of importance, pending.
+%option of selecting LFP and spike electrode is of importance, pending.
 
-function displayStimulationAll(MonkeyName,folderSource,stimulationString, condition, polarityString,session,bandString,SF, Con, Ori,badTrialNameStr)
+function displayStimulationAll(monkeyName,folderSource,stimulationString,condition,polarityString,session,bandString,sf,con,ori,badTrialNameStr)
 
-if ~exist('folderSourceString','var');  folderSource='Z:\Students\Niloy\MonkeyData';        end
-
+if ~exist('folderSource','var');  folderSource='Z:\Projects\Niloy_tES-StimulationProject';        end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display main options
 % fonts
@@ -25,7 +24,6 @@ timingPanelWidth = 0.15; timingStartPos = 0.625;
 plotOptionsPanelWidth = 0.15; plotOptionsStartPos = 0.79;
 actualplotPanelWidth=0.03; actualplotStartPos=0.96;
 backgroundColor = 'w';
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Stimulation panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,7 +76,7 @@ hDynamicPanel = uipanel('Title','Parameters','fontSize', fontSizeLarge, ...
     'Unit','Normalized','Position',[dynamicStartPos panelStartHeight dynamicPanelWidth panelHeight]);
 
 % Spatial Frequency
-spatialFreqString = getStringFromValues(SF,1);
+spatialFreqString = getStringFromValues(sf,1);
 uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Position',[0 1-3*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
     'Style','text','String','Spatial Freq (CPD)','FontSize',fontSizeSmall);
@@ -88,7 +86,7 @@ hSpatialFreq = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Style','popup','String',spatialFreqString,'FontSize',fontSizeSmall-1);
 
 % Orientation
-orientationString = getStringFromValues(Ori,1);
+orientationString = getStringFromValues(ori,1);
 uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Position',[0 1-6*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
     'Style','text','String','Orientation (Deg)','FontSize',fontSizeSmall);
@@ -98,7 +96,7 @@ hOrientation = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Style','popup','String',orientationString,'FontSize',fontSizeSmall-1);
 
 % Contrast
-contrastString = getStringFromValues(Con,1);
+contrastString = getStringFromValues(con,1);
 uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Position',[0 1-9*(dynamicHeight+dynamicGap) dynamicTextWidth dynamicHeight*3], ...
     'Style','text','String','Contrast (%)','FontSize',fontSizeSmall);
@@ -234,12 +232,12 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
         o=get(hOrientation,'val');
         c=get(hContrast,'val');
         analysisType = get(hAnalysisType,'val');
-        StimulationVal= get(hStimulationType,'val');
-        PolarityVal=get(hPolarity,'val');
-        BandFlag=get(hBand,'val');
+        stimulationVal= get(hStimulationType,'val');
+        polarityVal=get(hPolarity,'val');
+        bandFlag=get(hBand,'val');
 
-        %% Construct Protocol List
-        protocolID = strcat(stimulationString{StimulationVal}, '_', polarityString{PolarityVal}, '_', condition, '_', session);
+        %% construct Protocol List
+        protocolID = strcat(stimulationString{stimulationVal}, '_', polarityString{polarityVal}, '_', condition, '_', session);
 
         %% Load Protocol Information
         expDates = cell(1, 2);
@@ -258,7 +256,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             end
         end
 
-        folderin= fullfile(folderSource, 'Programs', 'Saved Data', MonkeyName ,strcat(session, '_Stim'),stimulationString{StimulationVal}, badTrialNameStr, condition, polarityString{PolarityVal});
+        folderin= fullfile(folderSource,'programs','savedData',monkeyName,strcat(session, '_Stim'),stimulationString{stimulationVal}, badTrialNameStr, condition, polarityString{polarityVal});
         [ColCode,titleString,StimblockID]=pickIDs(session);
         % an electrode deciding loop here, LFP(HighRMS) or Spike(goodResp)
 
@@ -274,7 +272,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             end
             text(-0.45,0.9,append('Session=',num2str(size(dates{1,1},2))),'color','k','FontSize',8,'FontWeight','bold');
             legend('','Stim','','Sham','Location','northeast')
-            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,BandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
+            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
             title(plothandle2,'\Delta Stim-Sham',FontSize=16)
         elseif analysisType==2
             normalizeFlag=1;
@@ -284,11 +282,11 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             plothandle1=hTF;
             plothandle2=hAllTF;
             plotTF(plothandle1,folderin,dates,protocols,f,c,o,badTrialNameStr)
-            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,BandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
+            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
         elseif analysisType==3
             plothandle1=hPAC;
             plothandle2=hAllPAC;
-            plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,f,c,o,badTrialNameStr,MonkeyName,ColCode,titleString,StimblockID)
+            plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,f,c,o,badTrialNameStr,monkeyName,ColCode,titleString,StimblockID)
         end
         for n=1:length(plothandle1)
             title(hFR(1,n),titleString{1,n},color=ColCode{1,n}{1,1},FontSize=16)
@@ -390,10 +388,10 @@ end
 
 
 %% Spike plotting code%%
-function plotSpikeRate(plothandle,folderin,condition,Session,normalizeFlag,dates,protocols,SFVals,ConVals,OriVals)
+function plotSpikeRate(plothandle,folderin,condition,Session,normalizeFlag,dates,protocols,sfVals,conVals,OriVals)
 
-if ~exist('SFVals','var'); SFVals=5; end
-if ~exist('ConVals','var'); ConVals=4; end
+if ~exist('sfVals','var'); sfVals=5; end
+if ~exist('conVals','var'); conVals=4; end
 if ~exist('OriVals','var'); OriVals=5; end
 
 folderin=cell2mat(folderin);
@@ -410,11 +408,11 @@ clear RawPSTH
 
 %     Collecting the data
 for iProt =1:size(protocols{1,1},2)
-    for j=1:length(SFVals)
+    for j=1:length(sfVals)
         for k=1:length(OriVals)
-            for l=1:length(ConVals)
+            for l=1:length(conVals)
                 for day=1:length(dates{1,1})
-                    DataSpike = dir(fullfile(folderin,append(num2str(SFVals(j)),'SF','_',num2str(OriVals(k)),'Ori','_',num2str(ConVals(l)),'Con','_',protocols{1,1}{day,iProt},'_',num2str(dates{1,1}{1,day}),'*PSTH.mat')));
+                    DataSpike = dir(fullfile(folderin,append(num2str(sfVals(j)),'sf','_',num2str(OriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,1}{day,iProt},'_',num2str(dates{1,1}{1,day}),'*PSTH.mat')));
 
                     % Loading the spike file
                     if ~isempty(DataSpike)
@@ -425,7 +423,7 @@ for iProt =1:size(protocols{1,1},2)
                         RawPSTH{day,:,:} =[];
                     end
                 end
-                alldayPSTH{j,k,l}=cat(1,RawPSTH{:,1}); %Concatenating across days
+                alldayPSTH{j,k,l}=cat(1,RawPSTH{:,1}); %concatenating across days
             end
         end
     end
@@ -484,14 +482,14 @@ end
 
 
 %% TF plotting code %%
-function plotTF(plothandle,folderin,dates,protocols,SFVals,ConVals,OriVals,badTrialNameStr)
+function plotTF(plothandle,folderin,dates,protocols,sfVals,conVals,OriVals,badTrialNameStr)
 
-if ~exist('SFVals','var'); SFVals=5; end
-if ~exist('ConVals','var'); ConVals=4; end
+if ~exist('sfVals','var'); sfVals=5; end
+if ~exist('conVals','var'); conVals=4; end
 if ~exist('OriVals','var'); OriVals=5; end
 
 
-if strcmp(badTrialNameStr,'V1') % We have to have a grid of different range, to comply with con values
+if strcmp(badTrialNameStr,'V1') % We have to have a grid of different range, to comply with convalues
     SGRange={{12 28}, {16,28}, {28,36}, {16,28}};
     FGRange={{32,44}, {32,48}, {48,68}, {36,52}};
     cLimsDiff=[-6 10];
@@ -504,11 +502,11 @@ end
 %% Getting Data
 for c=1:2
     for iProt =1:size(protocols{1,c},2)
-        for j=1:length(SFVals)
+        for j=1:length(sfVals)
             for k=1:length(OriVals)
-                for l=1:length(ConVals)
+                for l=1:length(conVals)
                     for day=1:length(dates{1,c})
-                        DataTF = dir(fullfile(folderin{1,c},append(num2str(SFVals(j)),'SF','_',num2str(OriVals(k)),'Ori','_',num2str(ConVals(l)),'Con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
+                        DataTF = dir(fullfile(folderin{1,c},append(num2str(sfVals(j)),'sf','_',num2str(OriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
                         % Loading the TF file
                         d2= load(fullfile(folderin{1,c},DataTF.name)); % DataStructure(field).name
                         RawTF(day,:,:) = (d2.TFDeltaPow);
@@ -534,8 +532,8 @@ for c=1:2
         set(gca,'FontWeight','bold');
         set(Xax,'FontSize',10);
         set(Yax,'FontSize',10);
-        yline(cell2mat(SGRange{1,ConVals}),"--");
-        yline(cell2mat(FGRange{1,ConVals}),"-");
+        yline(cell2mat(SGRange{1,conVals}),"--");
+        yline(cell2mat(FGRange{1,conVals}),"-");
     end
 end
 set(plothandle(1,1:size(protocols{1,c},2)),'XTick',[]);
@@ -550,7 +548,7 @@ end
 
 
 %% This code will plot PAC values with Frequency(Phase) in X axis and Frequency(Amplitude) in Y axis
-function plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,SFVals,ConVals,OriVals,badTrialNameStr,MonkeyName,ColCode,titleString,StimblockID)
+function plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,sfVals,conVals,OriVals,badTrialNameStr,monkeyName,ColCode,titleString,StimblockID)
 % For better visualization: splitting PAC plot into two parts: 2 to 150 Hz and 150Hz to 500Hz
 partitionFreq = [7 157 157 487];
 
@@ -570,7 +568,7 @@ ColCode=reshape(Col,[1 length(ColCode)-length(StimblockID)]);
 titleString=reshape(titl,[1 length(titleString)-length(StimblockID)]);
 
 
-% rfDataFileName = [MonkeyName 'MicroelectrodeRFData.mat']; %This file is in DataMap/ReceptiveFieldData/{MonkeyName} folder and should be in Matlab's path
+% rfDataFileName = [monkeyName 'MicroelectrodeRFData.mat']; %This file is in DataMap/ReceptiveFieldData/{monkeyName} folder and should be in Matlab's path
 % if exist(rfDataFileName,'file')
 %     tmp = load(rfDataFileName);
 %     electrodesToUse = tmp.highRMSElectrodes;
@@ -592,7 +590,7 @@ elseif strcmp(badTrialNameStr,'V4')
     SGRange={{16 28}, {16,28}, {28,40}, {20,40}};
 end
 
-stimFreqWin = {[SGRange{1,ConVals}  HGRange{1,ConVals}] };
+stimFreqWin = {[SGRange{1,conVals}  HGRange{1,conVals}] };
 
 if mod(stimFreqWin{1,nWin}{1},4)==1
     xFreq1=stimFreqWin{1,nWin}{1}-1;
@@ -638,7 +636,7 @@ for c=1:2
     for day=1:length(dates{1,c})
         for iProt =1:size(protocols{1,c},2)
             % if iProt==1
-            %     respFile = fullfile(folderin{1,c},'data',MonkeyName,gridType,dates{1,c}{1,day},protocols{1,c}{day,iProt},'segmentedData', append('GoodUnits',badTrialNameStr,'.mat'));
+            %     respFile = fullfile(folderin{1,c},'data',monkeyName,gridType,dates{1,c}{1,day},protocols{1,c}{day,iProt},'segmentedData', append('GoodUnits',badTrialNameStr,'.mat'));
             %     if isfile(respFile)
             %         respFileStruct=load(respFile);
             %         AllGoodUnit{1,iProt}=respFileStruct.goodSpikeElectrodes;
@@ -649,7 +647,7 @@ for c=1:2
             % [~,elecId]=find(ismember(goodElectrodes,respFileStruct.goodSpikeElectrodes));
 
             %tmpData struc=(Elecnum,numPeriods,Amplitude bins, PhaseBins);
-            tmpData = load(fullfile(folderin{1,c},[MonkeyName dates{1,c}{1,day} protocols{1,c}{day,iProt} '_removeMean' num2str(removeEvokedResponseFlag) '_Tapers' num2str(tapers(1)) '_' num2str(tapers(2)) '_' modality '_' sVarName num2str(SFVals) '_o' num2str(OriVals) '_c' num2str(ConVals) '_' pacMethod '_' filterName '_nSur' num2str(nSurrogates) '_MP' num2str(useMPFlag) badTrialNameStr '.mat']), 'pac','normalisedPac','meanAmp','surrogatePac','tval','pval', 'centerAmpFreq', 'centerPhaseFreq');
+            tmpData = load(fullfile(folderin{1,c},[monkeyName dates{1,c}{1,day} protocols{1,c}{day,iProt} '_removeMean' num2str(removeEvokedResponseFlag) '_Tapers' num2str(tapers(1)) '_' num2str(tapers(2)) '_' modality '_' sVarName num2str(sfVals) '_o' num2str(OriVals) '_c' num2str(conVals) '_' pacMethod '_' filterName '_nSur' num2str(nSurrogates) '_MP' num2str(useMPFlag) badTrialNameStr '.mat']), 'pac','normalisedPac','meanAmp','surrogatePac','tval','pval', 'centerAmpFreq', 'centerPhaseFreq');
             blGrid{day,iProt}=tmpData.pac(:,1,:,:);
             xFreqPos = intersect(find(tmpData.centerPhaseFreq>= xFreq1),find(tmpData.centerPhaseFreq<=  xFreq2));
             yFreqPos = intersect(find(tmpData.centerAmpFreq>= stimFreqWin{1,nWin}{3}),find(tmpData.centerAmpFreq<= stimFreqWin{1,nWin}{4}));
@@ -716,7 +714,7 @@ if strcmp(session,'single')
     for i = 1:2
         for prot = 1:numProtocols
             % Extract and concatenate along the second dimension
-            concatenated = cat(2, data{i, :, prot}); % Concatenate across the day cells
+            concatenated = cat(2, data{i, :, prot}); % concatenate across the day cells
             concatenated = reshape(concatenated, [], 1); % Reshape into 128x1
             concatenatedData(i, :, prot) = concatenated; % Store in 2x128x6 array
         end
@@ -739,7 +737,7 @@ elseif strcmp(session,'dual')
     numStimDays = length(dates{1,1});
     numShamDays = length(dates{1,2});
 
-    %Concatenate Data
+    %concatenate Data
     for prot = 1:numProtocols
         stimConcat = reshape(cat(2, data{1, :, prot}), [], 1);
         shamConcat = reshape(cat(2, data{2, :, prot}), [], 1);
