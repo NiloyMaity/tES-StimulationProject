@@ -27,4 +27,4 @@ V4 = 49:96;
 brainArea = {V1, V4};
 areaFlag=1; % for V1
 
-displayStimulationAll(monkeyName,folderSource,stimulationString, condition, polarityString,session,bandString,sf, con, ori,badTrialNameStr)
+displayStimulationAll(monkeyName,folderSource,stimulationString,condition,polarityString,session,bandString,sf,con,ori,badTrialNameStr)

@@ -18,8 +18,9 @@ fontSizeSmall = 10; fontSizeMedium = 12; fontSizeLarge = 16;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make Panels
 panelHeight = 0.15; panelStartHeight = 0.85;
+stimulationPanelWidth = 0.11; stimulationStartPos = 0.025;
 dynamicPanelWidth = 0.15; dynamicStartPos = 0.15;
-stimulationPanelWidth = 0.11; stimulationStartPos=0.025;
+rangesPanelWidth =0.17; rangesStartPos =0.35;
 timingPanelWidth = 0.15; timingStartPos = 0.625;
 plotOptionsPanelWidth = 0.15; plotOptionsStartPos = 0.79;
 actualplotPanelWidth=0.03; actualplotStartPos=0.96;
@@ -68,7 +69,7 @@ hBand = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
     'Style','popup','String',bandString,'FontSize',fontSizeSmall-1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dynamic panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Parameter panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 dynamicHeight = 0.06; dynamicGap=0.015; dynamicTextWidth = 0.6;
@@ -116,67 +117,125 @@ hAnalysisType = uicontrol('Parent',hDynamicPanel,'Unit','Normalized', ...
     'Style','popup','String',analysisTypeString,'FontSize',fontSizeSmall-1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ranges panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+rangesHeight = 0.06; rangesTextWidth = 0.01; rangesBoxWidth = 0.6;
+hRangePanel = uipanel('Title','Ranges','fontSize', fontSizeLarge, ...
+    'Unit','Normalized','Position',[rangesStartPos panelStartHeight rangesPanelWidth panelHeight]);
+frequencyRange=[0 100];
+timeRange=[-0.2 1];
+phaseFrequencyRange=[4 68];
+ampFrequencyRange=[7 157];
+
+% ranges
+uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'Position',[0 1-3.5*rangesHeight 0.4-rangesTextWidth rangesHeight*3.5], ...
+    'Style','text','String','Frequency Range','FontSize',fontSizeSmall);
+hFreqMin=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+rangesTextWidth 1-3.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(frequencyRange(1)),'FontSize',fontSizeSmall-1);
+hFreqMax=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.6+rangesTextWidth 1-3.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(frequencyRange(2)),'FontSize',fontSizeSmall-1);
+
+uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'Position',[0 1-7.5*rangesHeight 0.4-rangesTextWidth rangesHeight*3.5], ...
+    'Style','text','String','Time Range','FontSize',fontSizeSmall);
+hTimeMin=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+rangesTextWidth 1-7.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(timeRange(1)),'FontSize',fontSizeSmall-1);
+hTimeMax=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.6+rangesTextWidth 1-7.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(timeRange(2)),'FontSize',fontSizeSmall-1);
+
+% phase frequency range
+uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'Position',[0 1-11.5*rangesHeight 0.4-rangesTextWidth rangesHeight*3.5], ...
+    'Style','text','String','Phase Freq Range','FontSize',fontSizeSmall);
+hPhaseFreqMin=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+rangesTextWidth 1-11.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(phaseFrequencyRange(1)),'FontSize',fontSizeSmall-1);
+hPhaseFreqMax=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.6+rangesTextWidth 1-11.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(phaseFrequencyRange(2)),'FontSize',fontSizeSmall-1);
+
+% amplitude frequency range
+uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'Position',[0 1-15.5*rangesHeight 0.4-rangesTextWidth rangesHeight*3.5], ...
+    'Style','text','String','Amp Freq Range','FontSize',fontSizeSmall);
+hAmpFreqMin=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+rangesTextWidth 1-15.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(ampFrequencyRange(1)),'FontSize',fontSizeSmall-1);
+hAmpFreqMax=uicontrol('Parent',hRangePanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.6+rangesTextWidth 1-15.5*rangesHeight  0.8-rangesBoxWidth rangesHeight*3.5], ...
+    'Style','edit','String',num2str(ampFrequencyRange(2)),'FontSize',fontSizeSmall-1);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Timing panel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 timingHeight = 0.05; timingTextWidth = 0.015; timingBoxWidth = 0.6;
-hTimingPanel = uipanel('Title','Timing','fontSize', fontSizeLarge, ...
+hTimingPanel = uipanel('Title','Limits','fontSize', fontSizeLarge, ...
     'Unit','Normalized','Position',[timingStartPos panelStartHeight timingPanelWidth panelHeight]);
 
-% signalRange = [-0.2 1];
-baseline = [-0.5 0];
-xRange = [0.25 0.75];
+TFZRange = [-6 10];
+PACZRange = [0 0.00015];
 
-% Signal Range
+% parameters
 uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
     'Position',[0 1-3*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
     'Style','text','String','Parameter','FontSize',fontSizeSmall-1);
-
 uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
     'Position',[0.4+timingTextWidth 1-3*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
     'Style','text','String','Min','FontSize',fontSizeSmall-1);
-
 uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'Position',[0.1+timingBoxWidth 1-3*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Position',[0.7+timingTextWidth 1-3*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
     'Style','text','String','Max','FontSize',fontSizeSmall-1);
 
-% Baseline
+% firing rate
 uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
     'Position',[0 1-7*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
-    'Style','text','String','Basline (s)','FontSize',fontSizeSmall-1);
-uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'BackgroundColor', backgroundColor, ...
-    'Position',[0.4+timingTextWidth 1-7*timingHeight  0.8-timingBoxWidth timingHeight*3.5], ...
-    'Style','edit','String',num2str(baseline(1)),'FontSize',fontSizeSmall-1);
-uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'BackgroundColor', backgroundColor, ...
-    'Position',[0.1+timingBoxWidth 1-7*timingHeight  0.8-timingBoxWidth timingHeight*3.5], ...
-    'Style','edit','String',num2str(baseline(2)),'FontSize',fontSizeSmall-1);
-
-% X Range
-uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'Position',[0 1-11*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
-    'Style','text','String','X range','FontSize',fontSizeSmall-1);
-hXMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'BackgroundColor', backgroundColor, ...
-    'Position',[0.4+timingTextWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
-    'Style','edit','String',num2str(xRange(1)),'FontSize',fontSizeSmall-1);
-hXMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'BackgroundColor', backgroundColor, ...
-    'Position',[0.1+timingBoxWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
-    'Style','edit','String',num2str(xRange(2)),'FontSize',fontSizeSmall-1);
-
-% Y Range
-uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
-    'Position',[0 1-15*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
-    'Style','text','String','Y Range','FontSize',fontSizeSmall-1);
+    'Style','text','String','Firing rate','FontSize',fontSizeSmall-1);
 hYMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
     'BackgroundColor', backgroundColor, ...
-    'Position',[0.4+timingTextWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Position',[0.4+timingTextWidth 1-7*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
     'Style','edit','String','0','FontSize',fontSizeSmall-1);
 hYMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
     'BackgroundColor', backgroundColor, ...
-    'Position',[0.1+timingBoxWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Position',[0.1+timingBoxWidth 1-7*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
     'Style','edit','String','1','FontSize',fontSizeSmall-1);
+
+% color limits for TF
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-11*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','TF Color Lims','FontSize',fontSizeSmall-1);
+hTFZMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+timingTextWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(TFZRange(1)),'FontSize',fontSizeSmall-1);
+hTFZMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.1+timingBoxWidth 1-11*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(TFZRange(2)),'FontSize',fontSizeSmall-1);
+
+% color limits for PAC
+uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'Position',[0 1-15*timingHeight 0.4-timingTextWidth timingHeight*3.5], ...
+    'Style','text','String','PAC Color Lims','FontSize',fontSizeSmall-1);
+hPACZMin = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.4+timingTextWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(PACZRange(1)),'FontSize',fontSizeSmall-1);
+hPACZMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
+    'BackgroundColor', backgroundColor, ...
+    'Position',[0.1+timingBoxWidth 1-15*timingHeight 0.8-timingBoxWidth timingHeight*3.5], ...
+    'Style','edit','String',num2str(PACZRange(2)),'FontSize',fontSizeSmall-1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Plot Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,18 +243,10 @@ hYMax = uicontrol('Parent',hTimingPanel,'Unit','Normalized', ...
 plotOptionsHeight = 0.1;
 hPlotOptionsPanel = uipanel('Title','Plotting Options','fontSize', fontSizeLarge, ...
     'Unit','Normalized','Position',[plotOptionsStartPos panelStartHeight plotOptionsPanelWidth panelHeight]);
-
 uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
     'Position',[0 6*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
     'Style','pushbutton','String','cla','FontSize',fontSizeMedium, ...
     'Callback',{@cla_Callback});
-
-% hHoldOn = uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
-%     'Position',[0 3*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
-%     'Style','togglebutton','String','hold on','FontSize',fontSizeMedium, ...
-%     'Callback',{@holdOn_Callback});
-% add rescale all button
-
 uicontrol('Parent',hPlotOptionsPanel,'Unit','Normalized', ...
     'Position',[0 0.05*plotOptionsHeight 1 plotOptionsHeight+0.25], ...
     'Style','pushbutton','String','rescale All','FontSize',fontSizeMedium, ...
@@ -237,7 +288,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
         bandFlag=get(hBand,'val');
 
         %% construct Protocol List
-        protocolID = strcat(stimulationString{stimulationVal}, '_', polarityString{polarityVal}, '_', condition, '_', session);
+        protocolID = strcat(monkeyName,stimulationString{stimulationVal}, '_', polarityString{polarityVal}, '_', condition, '_', session);
 
         %% Load Protocol Information
         expDates = cell(1, 2);
@@ -247,11 +298,11 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
         for i=1:2
             [expDates{i},protocolNames{i},~] = eval(['allProtocols' protocolID{i}]);
             dates{i}=unique(expDates{i},'stable');
-            ProtN=size(expDates{i},2)./size(dates{i},2); %Gives us the number of Protocols, condition specific
+            protN=size(expDates{i},2)./size(dates{i},2); %Gives us the number of Protocols, condition specific
 
             for day=1:length(dates{i})
-                for n=1:ProtN
-                    protocols{1,i}{day,n}=protocolNames{1,i}{1,n+(day-1)*ProtN}; %This loop rearranges all the protocols in a nice identifiable structure
+                for n=1:protN
+                    protocols{1,i}{day,n}=protocolNames{1,i}{1,n+(day-1)*protN}; %This loop rearranges all the protocols in a nice identifiable structure
                 end
             end
         end
@@ -318,46 +369,49 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
         analysisType = get(hAnalysisType,'val');
         if analysisType==1
             plothandle=hFR;
+            xMax = str2double(get(hTimeMax,'String'));
+            xMin = str2double(get(hTimeMin,'String'));
+            yMax = str2double(get(hYMax,'String'));
+            yMin = str2double(get(hYMin,'String'));
+            zMax = [];
+            zMin = [];
         elseif analysisType==2
             plothandle=hTF;
+            xMax = str2double(get(hTimeMax,'String'));
+            xMin = str2double(get(hTimeMin,'String'));
+            yMax = str2double(get(hFreqMax,'String'));
+            yMin = str2double(get(hFreqMin,'String'));
+            zMax = str2double(get(hTFZMax,'String'));
+            zMin = str2double(get(hTFZMin,'String'));
         elseif analysisType==3
             plothandle=hPAC;
+            xMax = str2double(get(hPhaseFreqMax,'String'));
+            xMin = str2double(get(hPhaseFreqMin,'String'));
+            yMax = str2double(get(hAmpFreqMax,'String'));
+            yMin = str2double(get(hAmpFreqMin,'String'));
+            zMax = str2double(get(hPACZMax,'String'));
+            zMin = str2double(get(hPACZMin,'String'));
         end
-
-        if analysisType<=3 % FR,TF or PAC
-            xMin = str2double(get(hXMin,'String'));
-            xMax = str2double(get(hXMax,'String'));
-            yMin = str2double(get(hYMin,'String'));
-            yMax = str2double(get(hYMax,'String'));
-
-        elseif analysisType==4
-            xMin = str2double(get(hSTAMin,'String'));
-            xMax = str2double(get(hSTAMax,'String'));
-        else
-            xMin = str2double(get(hFFTMin,'String'));
-            xMax = str2double(get(hFFTMax,'String'));
-        end
-
-        rescaleData(plothandle,xMin,xMax,yMin,yMax);
+        rescaleData(plothandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType);
     end
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    function rescaleData(plothandle,xMin,xMax,yMin,yMax)
-
+    function rescaleData(plothandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType)
         [numRows,numCols] = size(plothandle);
-        labelSize=12;
         for i=1:numRows
             for j=1:numCols
                 axis(plothandle(i,j),[xMin xMax yMin yMax]);
+                if analysisType==2||analysisType==3
+                    clim(plothandle(i,j),[zMin,zMax])              
+                end
                 if (i==numRows && rem(j,2)==1)
                     if j~=1
-                        set(plothandle(i,j),'YTickLabel',[],'fontSize',labelSize);
+                        set(plothandle(i,j),'YTickLabel',[]);
                     end
                 elseif (rem(i,2)==0 && j==1)
-                    set(plothandle(i,j),'XTickLabel',[],'fontSize',labelSize);
+                    set(plothandle(i,j),'XTickLabel',[]);
                 else
-                    set(plothandle(i,j),'XTickLabel',[],'YTickLabel',[],'fontSize',labelSize);
+                    set(plothandle(i,j),'XTickLabel',[],'YTickLabel',[]);
                 end
             end
         end
@@ -573,7 +627,7 @@ titleString=reshape(titl,[1 length(titleString)-length(StimblockID)]);
 %     tmp = load(rfDataFileName);
 %     electrodesToUse = tmp.highRMSElectrodes;
 % end
-% 
+%
 % % Finding the brain area
 % if strcmp(badTrialNameStr,'V1')
 %     AreaFlag=1;
@@ -724,12 +778,12 @@ if strcmp(session,'single')
         St=concatenatedData(1,:,prot);
         Sh=concatenatedData(2,:,prot);
         dMI{1,prot}=St-Sh;
-        StError{1,prot}=std(dMI{1,prot})/sqrt(size(dMI{1,prot},2));
+        stError{1,prot}=std(dMI{1,prot})/sqrt(size(dMI{1,prot},2));
         AvgMI{1,prot}=mean(dMI{1,prot});
     end
     point=1:numProtocols-1;
     AvgMI(2)=[];
-    StError(2)=[];
+    stError(2)=[];
     dMI(2)=[];
 
 elseif strcmp(session,'dual')
@@ -774,14 +828,14 @@ elseif strcmp(session,'dual')
     % Compute Differences, Std Error, Mean
     for prot = 1:numProtocols
         dMI{1, prot} = avg_Stim{prot} - avg_Sham{prot};
-        StError{1, prot} = std(dMI{1, prot}) / sqrt(length(dMI{1, prot}));
+        stError{1, prot} = std(dMI{1, prot}) / sqrt(length(dMI{1, prot}));
         AvgMI{1, prot} = mean(dMI{1, prot});
     end
     point=1:numProtocols-2;
     AvgMI(2)=[];% making first stimblock(prot=2) zero
     AvgMI(3)=[];% making second stimblock(prot=4) zero, as it is now 3rd protocol after deletion
-    StError(2)=[];
-    StError(3)=[];
+    stError(2)=[];
+    stError(3)=[];
     dMI(2)=[];
     dMI(3)=[];
 end
@@ -794,7 +848,7 @@ elseif strcmp(session,'dual')
 end
 
 for prot=1:numProtocols
-    errorbar(subplot(plothandle2),point(prot),AvgMI{1,prot}-AvgMI{1,1},[StError{1,prot}],'color','#ED4672','LineWidth',1.5);
+    errorbar(subplot(plothandle2),point(prot),AvgMI{1,prot}-AvgMI{1,1},[stError{1,prot}],'color','#ED4672','LineWidth',1.5);
     hold on
 end
 
@@ -849,19 +903,19 @@ for freqstat=nWin %Band specific identity
             ypoint=(Asterixdata(:,d));
             if ypoint<0
                 if stat2(1,d)<0.0005
-                    text(Xcentres(:,d)-0.3,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.3,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.005
-                    text(Xcentres(:,d)-0.2,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.2,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.05
-                    text(Xcentres(:,d)-0.1,ypoint-(cell2mat(StError(freqstat,d))+0.4*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.1,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 end
             elseif ypoint>0
                 if stat2(1,d)<0.0005
-                    text(Xcentres(:,d)-0.35,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.35,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.005
-                    text(Xcentres(:,d)-0.25,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.25,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.05
-                    text(Xcentres(:,d)-0.15,ypoint+(cell2mat(StError(freqstat,d))+0.7*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(Xcentres(:,d)-0.15,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 end
             end
         end
