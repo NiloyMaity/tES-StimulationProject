@@ -50,22 +50,13 @@ hPolarity = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
     [stimulationTextWidth 1-5.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
     'Style','popup','String',polarityString,'FontSize',fontSizeSmall-1);
 
-% Session
-uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
-    'Position',[0 1-9*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
-    'Style','text','String','Session','FontSize',fontSizeSmall);
-uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
-    'BackgroundColor', backgroundColor, 'Position', ...
-    [stimulationTextWidth 1-8.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
-    'Style','popup','String',session,'FontSize',fontSizeSmall-1);
-
 % Choice of Band
 uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
-    'Position',[0 1-12*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
+    'Position',[0 1-9*(stimulationHeight+stimulationGap) stimulationTextWidth stimulationHeight*3], ...
     'Style','text','String','Band','FontSize',fontSizeSmall);
 hBand = uicontrol('Parent',hstimulationPanel,'Unit','Normalized', ...
     'BackgroundColor', backgroundColor, 'Position', ...
-    [stimulationTextWidth 1-11.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
+    [stimulationTextWidth 1-8.5*(stimulationHeight+stimulationGap) 1-stimulationTextWidth stimulationHeight*3], ...
     'Style','popup','String',bandString,'FontSize',fontSizeSmall-1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -307,8 +298,8 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             end
         end
 
-        folderin= fullfile(folderSource,'programs','savedData',monkeyName,strcat(session, '_Stim'),stimulationString{stimulationVal}, badTrialNameStr, condition, polarityString{polarityVal});
-        [ColCode,titleString,StimblockID]=pickIDs(session);
+        folderIn= fullfile(folderSource,'programs','savedData',monkeyName,strcat(session, '_Stim'),stimulationString{stimulationVal}, badTrialNameStr, condition, polarityString{polarityVal});
+        [colCode,titleString,stimBlockID]=pickIDs(session);
         % an electrode deciding loop here, LFP(HighRMS) or Spike(goodResp)
 
         if analysisType==1
@@ -316,49 +307,49 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             transientFlag=0;
             FRFlag=1;
             PSDFlag=0;
-            plothandle1=hFR;
-            plothandle2=hAllFR;
+            plotHandle1=hFR;
+            plotHandle2=hAllFR;
             for cnd=1:2
-                plotSpikeRate(plothandle1,folderin(cnd),condition(cnd),session,normalizeFlag,dates(cnd),protocols(cnd),f,c,o)
+                plotSpikeRate(plotHandle1,folderIn(cnd),condition(cnd),session,normalizeFlag,dates(cnd),protocols(cnd),f,c,o)
             end
             text(-0.45,0.9,append('Session=',num2str(size(dates{1,1},2))),'color','k','FontSize',8,'FontWeight','bold');
             legend('','Stim','','Sham','Location','northeast')
-            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
-            title(plothandle2,'\Delta Stim-Sham',FontSize=16)
+            plotSpikePower(plotHandle2,folderIn,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,colCode,titleString,stimBlockID)
+            title(plotHandle2,'\Delta Stim-Sham',FontSize=16)
         elseif analysisType==2
             normalizeFlag=1;
             transientFlag=0;
             FRFlag=0;
             PSDFlag=1;
-            plothandle1=hTF;
-            plothandle2=hAllTF;
-            plotTF(plothandle1,folderin,dates,protocols,f,c,o,badTrialNameStr)
-            plotSpikePower(plothandle2,folderin,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,ColCode,titleString,StimblockID)
+            plotHandle1=hTF;
+            plotHandle2=hAllTF;
+            plotTF(plotHandle1,folderIn,dates,protocols,f,c,o,badTrialNameStr)
+            plotSpikePower(plotHandle2,folderIn,session,normalizeFlag,transientFlag,FRFlag,PSDFlag,bandFlag,dates,protocols,f,c,o,colCode,titleString,stimBlockID)
         elseif analysisType==3
-            plothandle1=hPAC;
-            plothandle2=hAllPAC;
-            plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,f,c,o,badTrialNameStr,monkeyName,ColCode,titleString,StimblockID)
+            plotHandle1=hPAC;
+            plotHandle2=hAllPAC;
+            plotPAC(plotHandle1,plotHandle2,folderIn,dates,protocols,session,f,c,o,badTrialNameStr,monkeyName,colCode,titleString,stimBlockID)
         end
-        for n=1:length(plothandle1)
-            title(hFR(1,n),titleString{1,n},color=ColCode{1,n}{1,1},FontSize=16)
+        for n=1:length(plotHandle1)
+            title(hFR(1,n),titleString{1,n},color=colCode{1,n}{1,1},FontSize=16)
         end
     end
 
 
     function cla_Callback(~,~)
-        claGivenplothandle(hFR);
-        claGivenplothandle(hTF);
-        claGivenplothandle(hPAC);
-        claGivenplothandle(hAllFR);
-        claGivenplothandle(hAllTF);
-        claGivenplothandle(hAllPAC);
+        claGivenPlotHandle(hFR);
+        claGivenPlotHandle(hTF);
+        claGivenPlotHandle(hPAC);
+        claGivenPlotHandle(hAllFR);
+        claGivenPlotHandle(hAllTF);
+        claGivenPlotHandle(hAllPAC);
         % cla(hRFMapPlot);cla(hcenterRFMapPlot);
 
-        function claGivenplothandle(plothandle)
-            [numRows,numCols] = size(plothandle);
+        function claGivenPlotHandle(plotHandle)
+            [numRows,numCols] = size(plotHandle);
             for i=1:numRows
                 for j=1:numCols
-                    cla(plothandle(i,j));
+                    cla(plotHandle(i,j));
                 end
             end
         end
@@ -368,7 +359,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
 
         analysisType = get(hAnalysisType,'val');
         if analysisType==1
-            plothandle=hFR;
+            plotHandle=hFR;
             xMax = str2double(get(hTimeMax,'String'));
             xMin = str2double(get(hTimeMin,'String'));
             yMax = str2double(get(hYMax,'String'));
@@ -376,7 +367,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             zMax = [];
             zMin = [];
         elseif analysisType==2
-            plothandle=hTF;
+            plotHandle=hTF;
             xMax = str2double(get(hTimeMax,'String'));
             xMin = str2double(get(hTimeMin,'String'));
             yMax = str2double(get(hFreqMax,'String'));
@@ -384,7 +375,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             zMax = str2double(get(hTFZMax,'String'));
             zMin = str2double(get(hTFZMin,'String'));
         elseif analysisType==3
-            plothandle=hPAC;
+            plotHandle=hPAC;
             xMax = str2double(get(hPhaseFreqMax,'String'));
             xMin = str2double(get(hPhaseFreqMin,'String'));
             yMax = str2double(get(hAmpFreqMax,'String'));
@@ -392,26 +383,26 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             zMax = str2double(get(hPACZMax,'String'));
             zMin = str2double(get(hPACZMin,'String'));
         end
-        rescaleData(plothandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType);
+        rescaleData(plotHandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType);
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    function rescaleData(plothandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType)
-        [numRows,numCols] = size(plothandle);
+    function rescaleData(plotHandle,xMin,xMax,yMin,yMax,zMin,zMax,analysisType)
+        [numRows,numCols] = size(plotHandle);
         for i=1:numRows
             for j=1:numCols
-                axis(plothandle(i,j),[xMin xMax yMin yMax]);
+                axis(plotHandle(i,j),[xMin xMax yMin yMax]);
                 if analysisType==2||analysisType==3
-                    clim(plothandle(i,j),[zMin,zMax])              
+                    clim(plotHandle(i,j),[zMin,zMax])              
                 end
                 if (i==numRows && rem(j,2)==1)
                     if j~=1
-                        set(plothandle(i,j),'YTickLabel',[]);
+                        set(plotHandle(i,j),'YTickLabel',[]);
                     end
                 elseif (rem(i,2)==0 && j==1)
-                    set(plothandle(i,j),'XTickLabel',[]);
+                    set(plotHandle(i,j),'XTickLabel',[]);
                 else
-                    set(plothandle(i,j),'XTickLabel',[],'YTickLabel',[]);
+                    set(plotHandle(i,j),'XTickLabel',[],'YTickLabel',[]);
                 end
             end
         end
@@ -442,13 +433,13 @@ end
 
 
 %% Spike plotting code%%
-function plotSpikeRate(plothandle,folderin,condition,Session,normalizeFlag,dates,protocols,sfVals,conVals,OriVals)
+function plotSpikeRate(plotHandle,folderIn,condition,session,normalizeFlag,dates,protocols,sfVals,conVals,oriVals)
 
 if ~exist('sfVals','var'); sfVals=5; end
 if ~exist('conVals','var'); conVals=4; end
-if ~exist('OriVals','var'); OriVals=5; end
+if ~exist('OriVals','var'); oriVals=5; end
 
-folderin=cell2mat(folderin);
+folderIn=cell2mat(folderIn);
 if strcmp(condition,'Stim')
     cnd=1;
 elseif strcmp(condition,'Sham')
@@ -456,28 +447,28 @@ elseif strcmp(condition,'Sham')
 end
 
 % Calling the color grid
-ColCode=pickIDs(Session);
-ColLine={'#ff6f00','#5800FF'};
-clear RawPSTH
+colCode=pickIDs(session);
+colLine={'#ff6f00','#5800FF'};
+clear rawPSTH
 
 %     Collecting the data
 for iProt =1:size(protocols{1,1},2)
     for j=1:length(sfVals)
-        for k=1:length(OriVals)
+        for k=1:length(oriVals)
             for l=1:length(conVals)
                 for day=1:length(dates{1,1})
-                    DataSpike = dir(fullfile(folderin,append(num2str(sfVals(j)),'sf','_',num2str(OriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,1}{day,iProt},'_',num2str(dates{1,1}{1,day}),'*PSTH.mat')));
+                    dataSpike = dir(fullfile(folderIn,append(num2str(sfVals(j)),'sf','_',num2str(oriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,1}{day,iProt},'_',num2str(dates{1,1}{1,day}),'*PSTH.mat')));
 
                     % Loading the spike file
-                    if ~isempty(DataSpike)
-                        s1 = load(fullfile(folderin,DataSpike.name)); % DataStructure(field).name
-                        RawPSTH{day,:,:} = s1.PSTHGrid;
-                        SPtList=s1.xs; %Spike timevals
+                    if ~isempty(dataSpike)
+                        s1 = load(fullfile(folderIn,dataSpike.name)); % DataStructure(field).name
+                        rawPSTH{day,:,:} = s1.PSTHGrid;
+                        spktList=s1.xs; %Spike timevals
                     else
-                        RawPSTH{day,:,:} =[];
+                        rawPSTH{day,:,:} =[];
                     end
                 end
-                alldayPSTH{j,k,l}=cat(1,RawPSTH{:,1}); %concatenating across days
+                alldayPSTH{j,k,l}=cat(1,rawPSTH{:,1}); %concatenating across days
             end
         end
     end
@@ -496,11 +487,11 @@ end
 % Plot delta shade PSTH plot
 for iProt =1:size(protocols{1,1},2)
     if normalizeFlag==1
-        DeltaShadeData=normFRData{iProt,:};
+        deltaShadeData=normFRData{iProt,:};
     else
-        DeltaShadeData=PSTHData{iProt,:};
+        deltaShadeData=PSTHData{iProt,:};
     end
-    options.handle = plothandle(1,iProt);
+    options.handle = plotHandle(1,iProt);
     % options.color_area = ColCode{1,iProt}{1,1};
     if strcmp(condition,'Stim')
         options.color_area =[255, 111, 0]./255;
@@ -510,37 +501,37 @@ for iProt =1:size(protocols{1,1},2)
 
     options.alpha      = 0.2;
     options.error      = 'sem';
-    options.x_axis= SPtList;
-    plot_areaerrorbar(DeltaShadeData, options);hold on;
-    axis(plothandle(1,iProt),[[-0.5 1] [-0.2 1]]);
+    options.x_axis= spktList;
+    plot_areaerrorbar(deltaShadeData, options);hold on;
+    axis(plotHandle(1,iProt),[[-0.5 1] [-0.2 1]]);
 end
 
 for iProt=1:size(protocols{1,1},2)
     if ~isempty(PSTHData{iProt,:})
         if normalizeFlag==1
-            plot(plothandle(1,iProt),SPtList,mean(normFRData{iProt,:},1,'omitnan'),LineWidth=1.6, color=ColLine{1,cnd});hold (plothandle(1,iProt),'on');
+            plot(plotHandle(1,iProt),spktList,mean(normFRData{iProt,:},1,'omitnan'),LineWidth=1.6, color=colLine{1,cnd});hold (plotHandle(1,iProt),'on');
             if iProt==size(protocols{1,1},2)
-                axes(plothandle(1,iProt))
+                axes(plotHandle(1,iProt))
             end
         else
-            plot(plothandle(1,iProt),SPtList,mean(PSTHData{iProt,:},1,'omitnan'),LineWidth=1.6, color=ColCode{1,iProt}{1,2});hold (plothandle(1,iProt),'on');
+            plot(plotHandle(1,iProt),spktList,mean(PSTHData{iProt,:},1,'omitnan'),LineWidth=1.6, color=colCode{1,iProt}{1,2});hold (plotHandle(1,iProt),'on');
             if iProt==size(protocols{1,1},2)
-                axes(plothandle(1,iProt))
+                axes(plotHandle(1,iProt))
             end
         end
     end
 end
-set(plothandle(1,2:end),'ytick',[])
-set(plothandle(1,1:end),'xtick',[])
+set(plotHandle(1,2:end),'ytick',[])
+set(plotHandle(1,1:end),'xtick',[])
 end
 
 
 %% TF plotting code %%
-function plotTF(plothandle,folderin,dates,protocols,sfVals,conVals,OriVals,badTrialNameStr)
+function plotTF(plotHandle,folderIn,dates,protocols,sfVals,conVals,oriVals,badTrialNameStr)
 
 if ~exist('sfVals','var'); sfVals=5; end
 if ~exist('conVals','var'); conVals=4; end
-if ~exist('OriVals','var'); OriVals=5; end
+if ~exist('OriVals','var'); oriVals=5; end
 
 
 if strcmp(badTrialNameStr,'V1') % We have to have a grid of different range, to comply with convalues
@@ -557,17 +548,17 @@ end
 for c=1:2
     for iProt =1:size(protocols{1,c},2)
         for j=1:length(sfVals)
-            for k=1:length(OriVals)
+            for k=1:length(oriVals)
                 for l=1:length(conVals)
                     for day=1:length(dates{1,c})
-                        DataTF = dir(fullfile(folderin{1,c},append(num2str(sfVals(j)),'sf','_',num2str(OriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
+                        dataTF = dir(fullfile(folderIn{1,c},append(num2str(sfVals(j)),'sf','_',num2str(oriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
                         % Loading the TF file
-                        d2= load(fullfile(folderin{1,c},DataTF.name)); % DataStructure(field).name
-                        RawTF(day,:,:) = (d2.TFDeltaPow);
+                        d2= load(fullfile(folderIn{1,c},dataTF.name)); % DataStructure(field).name
+                        rawTF(day,:,:) = (d2.TFDeltaPow);
                         tList=d2.tList; % Time frequency list
                         fList=d2.fList; % Frequency point list
                     end
-                    allday{j,k,l}=squeeze(mean(RawTF,1,"omitnan"));%Averaging across days took place here
+                    allday{j,k,l}=squeeze(mean(rawTF,1,"omitnan"));%Averaging across days took place here
                 end
             end
         end
@@ -576,11 +567,11 @@ for c=1:2
 
     %% Plot TimeFrequency plot
     for iProt=1:size(protocols{1,c},2)
-        pcolor(tList,fList,squeeze(TFData(iProt,:,:))','Parent',plothandle(c,iProt));colormap('jet');
-        shading(plothandle(c,iProt),'interp');
-        clim(plothandle(c,iProt),cLimsDiff);
-        axes(plothandle(c,iProt))
-        axis(plothandle(1:2,iProt),[[-0.5 1] [0 100]]);
+        pcolor(tList,fList,squeeze(TFData(iProt,:,:))','Parent',plotHandle(c,iProt));colormap('jet');
+        shading(plotHandle(c,iProt),'interp');
+        clim(plotHandle(c,iProt),cLimsDiff);
+        axes(plotHandle(c,iProt))
+        axis(plotHandle(1:2,iProt),[[-0.5 1] [0 100]]);
         Xax=gca().XAxis;
         Yax=gca().YAxis;
         set(gca,'FontWeight','bold');
@@ -590,10 +581,10 @@ for c=1:2
         yline(cell2mat(FGRange{1,conVals}),"-");
     end
 end
-set(plothandle(1,1:size(protocols{1,c},2)),'XTick',[]);
-set(plothandle(2,1:size(protocols{1,c},2)),'XTick',[0 0.5 1]);
-set(plothandle(1:end,2:end),'ytick',[])
-ax=plothandle(2,6);
+set(plotHandle(1,1:size(protocols{1,c},2)),'XTick',[]);
+set(plotHandle(2,1:size(protocols{1,c},2)),'XTick',[0 0.5 1]);
+set(plotHandle(1:end,2:end),'ytick',[])
+ax=plotHandle(2,size(protocols{1,c},2));
 cb=colorbar(ax);
 cb.Position=[0.8064 0.359 0.0064 0.1302];
 cb.TickDirection = 'none';
@@ -602,7 +593,7 @@ end
 
 
 %% This code will plot PAC values with Frequency(Phase) in X axis and Frequency(Amplitude) in Y axis
-function plotPAC(plothandle1,plothandle2,folderin,dates,protocols,session,sfVals,conVals,OriVals,badTrialNameStr,monkeyName,ColCode,titleString,StimblockID)
+function plotPAC(plotHandle1,plotHandle2,folderIn,dates,protocols,session,sfVals,conVals,OriVals,badTrialNameStr,monkeyName,colCode,titleString,stimBlockID)
 % For better visualization: splitting PAC plot into two parts: 2 to 150 Hz and 150Hz to 500Hz
 partitionFreq = [7 157 157 487];
 
@@ -611,15 +602,15 @@ partitionFreq = [7 157 157 487];
 % BrainArea={V1,V4};
 nWin=1;
 
-for ses=1:length(StimblockID)
-    ColCode{1,StimblockID(ses)}=[];
-    titleString{1,StimblockID(ses)}=[];
+for ses=1:length(stimBlockID)
+    colCode{1,stimBlockID(ses)}=[];
+    titleString{1,stimBlockID(ses)}=[];
 end
 
-Col=ColCode(~cellfun('isempty',ColCode));
-titl=titleString(~cellfun('isempty',ColCode));
-ColCode=reshape(Col,[1 length(ColCode)-length(StimblockID)]);
-titleString=reshape(titl,[1 length(titleString)-length(StimblockID)]);
+Col=colCode(~cellfun('isempty',colCode));
+titl=titleString(~cellfun('isempty',colCode));
+colCode=reshape(Col,[1 length(colCode)-length(stimBlockID)]);
+titleString=reshape(titl,[1 length(titleString)-length(stimBlockID)]);
 
 
 % rfDataFileName = [monkeyName 'MicroelectrodeRFData.mat']; %This file is in DataMap/ReceptiveFieldData/{monkeyName} folder and should be in Matlab's path
@@ -701,7 +692,7 @@ for c=1:2
             % [~,elecId]=find(ismember(goodElectrodes,respFileStruct.goodSpikeElectrodes));
 
             %tmpData struc=(Elecnum,numPeriods,Amplitude bins, PhaseBins);
-            tmpData = load(fullfile(folderin{1,c},[monkeyName dates{1,c}{1,day} protocols{1,c}{day,iProt} '_removeMean' num2str(removeEvokedResponseFlag) '_Tapers' num2str(tapers(1)) '_' num2str(tapers(2)) '_' modality '_' sVarName num2str(sfVals) '_o' num2str(OriVals) '_c' num2str(conVals) '_' pacMethod '_' filterName '_nSur' num2str(nSurrogates) '_MP' num2str(useMPFlag) badTrialNameStr '.mat']), 'pac','normalisedPac','meanAmp','surrogatePac','tval','pval', 'centerAmpFreq', 'centerPhaseFreq');
+            tmpData = load(fullfile(folderIn{1,c},[monkeyName dates{1,c}{1,day} protocols{1,c}{day,iProt} '_removeMean' num2str(removeEvokedResponseFlag) '_Tapers' num2str(tapers(1)) '_' num2str(tapers(2)) '_' modality '_' sVarName num2str(sfVals) '_o' num2str(OriVals) '_c' num2str(conVals) '_' pacMethod '_' filterName '_nSur' num2str(nSurrogates) '_MP' num2str(useMPFlag) badTrialNameStr '.mat']), 'pac','normalisedPac','meanAmp','surrogatePac','tval','pval', 'centerAmpFreq', 'centerPhaseFreq');
             blGrid{day,iProt}=tmpData.pac(:,1,:,:);
             xFreqPos = intersect(find(tmpData.centerPhaseFreq>= xFreq1),find(tmpData.centerPhaseFreq<=  xFreq2));
             yFreqPos = intersect(find(tmpData.centerAmpFreq>= stimFreqWin{1,nWin}{3}),find(tmpData.centerAmpFreq<= stimFreqWin{1,nWin}{4}));
@@ -711,13 +702,13 @@ for c=1:2
     end
 
     % Initialize the result as a 1x6 cell array
-    blresult = cell(1, size(protocols{1,c},2));
-    stresult = cell(1, size(protocols{1,c},2));
+    blResult = cell(1, size(protocols{1,c},2));
+    stResult = cell(1, size(protocols{1,c},2));
 
     % Loop through each column to concatenate along the first dimension
     for col = 1:size(protocols{1,c},2)
-        blresult{col} = cat(1, blGrid{:, col});
-        stresult{col} = cat(1, stGrid{:, col});
+        blResult{col} = cat(1, blGrid{:, col});
+        stResult{col} = cat(1, stGrid{:, col});
     end
 
     avgblResult = cell(1, size(protocols{1,c},2));
@@ -725,33 +716,33 @@ for c=1:2
 
     % Loop through each cell and compute the mean along the first dimension
     for col = 1:size(protocols{1,c},2)
-        avgblResult{col} = squeeze(mean(blresult{col}, 1)); % Compute the mean across the 1st dimension (size becomes 1x1x49x17)
-        avgstResult{col} = squeeze(mean(stresult{col}, 1));
+        avgblResult{col} = squeeze(mean(blResult{col}, 1)); % Compute the mean across the 1st dimension (size becomes 1x1x49x17)
+        avgstResult{col} = squeeze(mean(stResult{col}, 1));
     end
     freqIdx = find(tmpData.centerAmpFreq == partitionFreq(2));
     for n=1:size(protocols{1,c},2) % n=Pre or Post
-        pcolor(plothandle1(c,n),tmpData.centerPhaseFreq,tmpData.centerAmpFreq(1:freqIdx),avgstResult{1,n}((1:freqIdx),:)-avgblResult{1,n}((1:freqIdx),:));
-        shading(plothandle1(c,n),'interp');
-        clim(plothandle1(c,n), [climVals1 climVals2]);
-        set(plothandle1(1:2,:),'Yscale','log');
-        set(plothandle1(1:2,:),'Xscale','log');
+        pcolor(plotHandle1(c,n),tmpData.centerPhaseFreq,tmpData.centerAmpFreq(1:freqIdx),avgstResult{1,n}((1:freqIdx),:)-avgblResult{1,n}((1:freqIdx),:));
+        shading(plotHandle1(c,n),'interp');
+        clim(plotHandle1(c,n), [climVals1 climVals2]);
+        set(plotHandle1(1:2,:),'Yscale','log');
+        set(plotHandle1(1:2,:),'Xscale','log');
         if n==1
-            set(plothandle1(c,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,n),'yTickLabel',[ 10 50 100 150],'FontSize',8,'FontWeight','bold');
+            set(plotHandle1(c,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plotHandle1(2,n),'yTickLabel',[ 10 50 100 150],'FontSize',8,'FontWeight','bold');
         else
-            set(plothandle1(1,n),'yTick',[150 250 350 450],'FontSize',8,'FontWeight','bold'); set(plothandle1(1,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
-            set(plothandle1(2,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
+            set(plotHandle1(1,n),'yTick',[150 250 350 450],'FontSize',8,'FontWeight','bold'); set(plotHandle1(1,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
+            set(plotHandle1(2,n),'yTick',[ 10 50 100 150],'FontSize',8,'FontWeight','bold'); set(plotHandle1(2,n),'yTickLabel',[],'FontSize',8,'FontWeight','bold');
         end
     end
     if c==1
-        set(plothandle1(1:2,:),'xTickLabel',[])
+        set(plotHandle1(1:2,:),'xTickLabel',[])
     elseif c==2
-        set(plothandle1(2,:),'xTick',[ 5 10 24 40],'FontSize',8,'FontWeight','bold'); set(plothandle1(2,:),'xTickLabel',[ 5 10 24 40],'FontSize',8,'FontWeight','bold')
+        set(plotHandle1(2,:),'xTick',[ 5 10 24 40],'FontSize',8,'FontWeight','bold'); set(plotHandle1(2,:),'xTickLabel',[ 5 10 24 40],'FontSize',8,'FontWeight','bold')
     end
     eleclength=size(stGrid{1,1},1); % for later use
     clear stGrid blGrid tmpData avgstResult avgblResult
-    % clear plothandle
+    % clear plotHandle
 end
-ax=plothandle1(2,6);
+ax=plotHandle1(2,size(protocols{1,c},2));
 cb=colorbar(ax);
 cb.Position=[0.8064 0.0499 0.0064 0.1302];
 cb.Ruler.Exponent = -3;
@@ -779,10 +770,10 @@ if strcmp(session,'single')
         Sh=concatenatedData(2,:,prot);
         dMI{1,prot}=St-Sh;
         stError{1,prot}=std(dMI{1,prot})/sqrt(size(dMI{1,prot},2));
-        AvgMI{1,prot}=mean(dMI{1,prot});
+        avgMI{1,prot}=mean(dMI{1,prot});
     end
     point=1:numProtocols-1;
-    AvgMI(2)=[];
+    avgMI(2)=[];
     stError(2)=[];
     dMI(2)=[];
 
@@ -829,11 +820,11 @@ elseif strcmp(session,'dual')
     for prot = 1:numProtocols
         dMI{1, prot} = avg_Stim{prot} - avg_Sham{prot};
         stError{1, prot} = std(dMI{1, prot}) / sqrt(length(dMI{1, prot}));
-        AvgMI{1, prot} = mean(dMI{1, prot});
+        avgMI{1, prot} = mean(dMI{1, prot});
     end
     point=1:numProtocols-2;
-    AvgMI(2)=[];% making first stimblock(prot=2) zero
-    AvgMI(3)=[];% making second stimblock(prot=4) zero, as it is now 3rd protocol after deletion
+    avgMI(2)=[];% making first stimblock(prot=2) zero
+    avgMI(3)=[];% making second stimblock(prot=4) zero, as it is now 3rd protocol after deletion
     stError(2)=[];
     stError(3)=[];
     dMI(2)=[];
@@ -848,18 +839,18 @@ elseif strcmp(session,'dual')
 end
 
 for prot=1:numProtocols
-    errorbar(subplot(plothandle2),point(prot),AvgMI{1,prot}-AvgMI{1,1},[stError{1,prot}],'color','#ED4672','LineWidth',1.5);
+    errorbar(subplot(plotHandle2),point(prot),avgMI{1,prot}-avgMI{1,1},[stError{1,prot}],'color','#ED4672','LineWidth',1.5);
     hold on
 end
 
 xlim([0 numProtocols+1]);
 ylim([-5*10^-5 5*10^-5])
-plot(point,cell2mat(AvgMI)-cell2mat(AvgMI(1,1)),'color','#ED4672','LineWidth',1.5);
+plot(point,cell2mat(avgMI)-cell2mat(avgMI(1,1)),'color','#ED4672','LineWidth',1.5);
 yline(0*10^-5,LineWidth=0.8,LineStyle="--")
 
 for prot=1:numProtocols
-    w{1,prot}=AvgMI{1,prot}-AvgMI{1,1};
-    scatter(point(1,prot),w{1,prot},30,ColCode{1, prot}{1, 1},"filled")
+    w{1,prot}=avgMI{1,prot}-avgMI{1,1};
+    scatter(point(1,prot),w{1,prot},30,colCode{1, prot}{1, 1},"filled")
 end
 
 
@@ -884,8 +875,8 @@ end
 %% Plotting the significance star
 for freqstat=nWin %Band specific identity
     m=[w{:}];
-    Asterixdata=(m);
-    Xcentres=point;
+    asterixData=(m);
+    xCentres=point;
     hold on
     if freqstat==1
         stat1=SGdeltaStat(1,:);
@@ -895,34 +886,34 @@ for freqstat=nWin %Band specific identity
         stat2=FGdeltaStat(2,:);
     end
 
-    delete(findall(subplot(plothandle2(1,1)), 'Tag', 'SigStar'));
+    delete(findall(subplot(plotHandle2(1,1)), 'Tag', 'SigStar'));
     for d=1:numProtocols
         if stat1(1,d)==1
             hold on
-            subplot(plothandle2(1,1))
-            ypoint=(Asterixdata(:,d));
-            if ypoint<0
+            subplot(plotHandle2(1,1))
+            yPoint=(asterixData(:,d));
+            if yPoint<0
                 if stat2(1,d)<0.0005
-                    text(Xcentres(:,d)-0.3,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.3,yPoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.005
-                    text(Xcentres(:,d)-0.2,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.2,yPoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.05
-                    text(Xcentres(:,d)-0.1,ypoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.1,yPoint-(cell2mat(stError(freqstat,d))+0.4*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 end
-            elseif ypoint>0
+            elseif yPoint>0
                 if stat2(1,d)<0.0005
-                    text(Xcentres(:,d)-0.35,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.35,yPoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.005
-                    text(Xcentres(:,d)-0.25,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.25,yPoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 elseif stat2(1,d)<0.05
-                    text(Xcentres(:,d)-0.15,ypoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
+                    text(xCentres(:,d)-0.15,yPoint+(cell2mat(stError(freqstat,d))+0.7*10^-5),'\ast','fontWeight','bold','tag','SigStar',HandleVisibility='off'); hold on
                 end
             end
         end
     end
 end
 
-set(plothandle2(1,1),'XTick',1:length(point));
+set(plotHandle2(1,1),'XTick',1:length(point));
 xticklabels(titleString);
 line([0 length(point)+1], [5*10^-5 5*10^-5],'color','k')
 line([length(point)+1 length(point)+1], [-5*10^-5 5*10^-5],'color','k')
