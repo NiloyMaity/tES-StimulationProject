@@ -20,7 +20,7 @@ V4 = 49:96;
 brainArea = {V1, V4};
 
 %% Define Stimulation Sessions
-sessionTypes = {'single', 'dual', 'dual60'};
+sessionTypes = {'single','dual','dual60'};
 if sessionID < 0 || sessionID > 2
     error('Invalid SessionID. Must be 0, 1, or 2.');
 end
@@ -29,9 +29,9 @@ session = sessionTypes{sessionID + 1};
 %% Define Frequency Ranges Based on Condition
 [SGRange, FGRange] = defineFrequencyRanges(badTrialNameStr);
 
-%% Construct Protocol List
-protocolID = strcat(monkeyName,stimulationType, '_', polarity, '_', condition, '_', session);
-saveFolder = fullfile(folderSource, 'programs', 'savedData', monkeyName, strcat(Session, '_Stim'));
+%% Construct Protocol Lis
+protocolID = strcat(monkeyName,stimulationType,'_',polarity,'_',condition,'_',session);
+saveFolder = fullfile(folderSource,'programs','savedData',monkeyName,strcat(Session, '_Stim'));
 createDirectory(saveFolder);
 
 %% Load Protocol Information
@@ -47,20 +47,20 @@ for day=1:length(dates)
 end
 
 %% Load High RMS Electrodes (if available)
-rfDataFile = fullfile(folderSource, 'RMS_Cutoff', [monkeyName gridType 'RFData.mat']);
+rfDataFile = fullfile(folderSource,'RMS_Cutoff',[monkeyName gridType 'RFData.mat']);
 electrodesToUse = loadElectrodeData(rfDataFile);
-electrodeList = intersect(electrodesToUse, brainArea{areaFlag});
+electrodeList = intersect(electrodesToUse,brainArea{areaFlag});
 
 %% Main Processing Loop
 for sf = sfVals
     for ori = oriVals
         for con = conVals
             %% Determine Gamma Ranges
-            SGIdx = getFrequencyIndex(SGRange, con);
-            FGIdx = getFrequencyIndex(FGRange, con);
+            SGIdx = getFrequencyIndex(SGRange,con);
+            FGIdx = getFrequencyIndex(FGRange,con);
 
             %% Prepare Data Source Folder
-            dataout = fullfile(saveFolder, stimulationType, badTrialNameStr, condition, polarity);
+            dataout = fullfile(saveFolder,stimulationType,badTrialNameStr,condition,polarity);
             createDirectory(dataout);
 
             %% Process Each Experiment Date
@@ -69,25 +69,25 @@ for sf = sfVals
                 protocolList = protocols(dayIdx, :);
 
                 %% Identify Good Electrodes
-                areaGoodUnit = getGoodUnits(folderSource, monkeyName, gridType, currentDate, ...
-                    brainArea, areaFlag, badTrialNameStr);
+                areaGoodUnit = getGoodUnits(folderSource,monkeyName,gridType,currentDate, ...
+                    brainArea,areaFlag,badTrialNameStr);
                 %% Process Each Protocol
                 for iProt = 1:numel(protocolList)
                     protocol = protocolList{iProt};
-                    dataPath = fullfile(folderSource, 'data', monkeyName, gridType, currentDate, protocol);
+                    dataPath = fullfile(folderSource,'data',monkeyName,gridType,currentDate,protocol);
 
                     %% Load LFP & Stimulus Info
-                    [timeVals, Fs,  highImpElec] = loadLFPandImpedance(dataPath, brainArea{areaFlag});
+                    [timeVals, Fs,  highImpElec] = loadLFPandImpedance(dataPath,brainArea{areaFlag});
 
                     %% Get Trial Data
-                    [goodPos, electrodeList] = getValidTrials(dataPath, electrodeList, highImpElec, badTrialNameStr, sf, ori, con);
+                    [goodPos, electrodeList] = getValidTrials(dataPath,electrodeList,highImpElec,badTrialNameStr,sf,ori,con);
 
                     %% Compute Power Spectral Density (PSD), Time-Frequency (TF)  and Spike Data
-                    [ShadeData,f1,TFDeltaPow, TFStPower, fList, tList, BandData,CollectStSG, CollectBlSG, CollectStFG, CollectBlFG, CollectSG, CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName] = computePSDTFSpike(electrodeList, dataPath, dataout, timeVals, Fs, goodPos, SGIdx, FGIdx, ...
-                        areaGoodUnit, sf, ori, con, protocol, currentDate, PSDTFFlag);
+                    [ShadeData,f1,TFDeltaPow,TFStPower,fList,tList, BandData,CollectStSG,CollectBlSG,CollectStFG,CollectBlFG,CollectSG,CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName] = computePSDTFSpike(electrodeList,dataPath,dataout,timeVals,Fs,goodPos,SGIdx,FGIdx,...
+                        areaGoodUnit,sf,ori,con,protocol,currentDate,PSDTFFlag);
 
                     %% Save Data
-                    saveData(ShadeData,f1,TFDeltaPow, TFStPower, fList, tList, BandData,CollectStSG, CollectBlSG, CollectStFG, CollectBlFG, CollectSG, CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName);
+                    saveData(ShadeData,f1,TFDeltaPow,TFStPower,fList,tList,BandData,SGRange,FGRange,CollectStSG, CollectBlSG,CollectStFG,CollectBlFG,CollectSG,CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName);
                 end
             end
         end
@@ -287,10 +287,7 @@ if PSDTFFlag == 1
         sprintf('%dSF_%dOri_%dCon_%s_%s_PSD.mat', SF, Ori, Con, protocol, currentDate));
     TFFileName = fullfile(dataout, ...
         sprintf('%dSF_%dOri_%dCon_%s_%s_TF.mat', SF, Ori, Con, protocol, currentDate));
-
-    % save(PSDFileName, "ShadeData", "f1");
-    % save(TFFileName, "TFDeltaPow", "TFStPower", "fList", "tList");
-
+    
     % Compute and save band data
     CollectBlSG = log10(mean(spectraPSDBl(:, SGIdx(1):SGIdx(2)), 2));
     CollectBlFG = log10(mean(spectraPSDBl(:, FGIdx(1):FGIdx(2)), 2));
@@ -305,13 +302,12 @@ if PSDTFFlag == 1
 
     BandDataFileName = fullfile(dataout, ...
         sprintf('%dSF_%dOri_%dCon_%s_BandData.mat', SF, Ori, Con, currentDate));
-    % save(BandDataFileName, 'BandData', 'CollectStSG', 'CollectBlSG', 'CollectStFG', 'CollectBlFG', 'CollectSG', 'CollectFG');
 end
 end
 
 %% Save all data
-function saveData(ShadeData,f1,TFDeltaPow, TFStPower, fList, tList, BandData,CollectStSG, CollectBlSG, CollectStFG, CollectBlFG, CollectSG, CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName)
-save(BandDataFileName, 'BandData', 'CollectStSG', 'CollectBlSG', 'CollectStFG', 'CollectBlFG', 'CollectSG', 'CollectFG');
+function saveData(ShadeData,f1,TFDeltaPow, TFStPower, fList, tList, BandData,SGRange, FGRange,CollectStSG, CollectBlSG, CollectStFG, CollectBlFG, CollectSG, CollectFG,PSTHGrid,xs,BandDataFileName,PSDFileName,TFFileName,PSTHFileName)
+save(BandDataFileName, 'BandData','SGRange','FGRange','CollectStSG', 'CollectBlSG', 'CollectStFG', 'CollectBlFG', 'CollectSG', 'CollectFG');
 save(PSDFileName, "ShadeData", "f1");
 save(TFFileName, "TFDeltaPow", "TFStPower", "fList", "tList");
 save(PSTHFileName, "PSTHGrid", "xs");
