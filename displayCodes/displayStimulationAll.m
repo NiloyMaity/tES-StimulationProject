@@ -298,7 +298,7 @@ hAllPAC= getPlotHandles(1,1,[0.852,0.05,0.143 0.27],0.01,0.01,0);
             end
         end
 
-        folderIn= fullfile(folderSource,'programs','savedData',monkeyName,strcat(session, '_Stim'),stimulationString{stimulationVal}, badTrialNameStr, condition, polarityString{polarityVal});
+        folderIn= fullfile(folderSource,'programs','savedData',monkeyName,strcat(session, 'Stim'),stimulationString{stimulationVal}, badTrialNameStr, condition, polarityString{polarityVal});
         [colCode,titleString,stimBlockID]=pickIDs(session);
         % an electrode deciding loop here, LFP(HighRMS) or Spike(goodResp)
 

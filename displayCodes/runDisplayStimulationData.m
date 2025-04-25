@@ -8,7 +8,7 @@
 
 %% inputs
 monkeyName='dona';
-session='single';
+session='dual';
 badTrialNameStr='V1';
 folderSource='Z:\Projects\Niloy_tES-StimulationProject';
 sf=[1,2,3,4];
