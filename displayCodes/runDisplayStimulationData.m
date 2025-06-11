@@ -7,10 +7,10 @@
 %sessionID={0,1,2}
 
 %% inputs
-monkeyName='dona';
-session='dual';
-badTrialNameStr='V1';
-folderSource='Z:\Projects\Niloy_tES-StimulationProject';
+monkeyName='jojo';
+session='single';
+badTrialNameStr='V4';
+folderSource='D:';
 sf=[1,2,3,4];
 ori=[1,2,3,4];
 con=[1,2,3];
@@ -25,6 +25,6 @@ bandString={'Slow Gamma','Fast Gamma'};
 V1 = 1:48;
 V4 = 49:96;
 brainArea = {V1, V4};
-areaFlag=1; % for V1
+areaFlag=2; % for V1
 
 displayStimulationAll(monkeyName,folderSource,stimulationString,condition,polarityString,session,bandString,sf,con,ori,badTrialNameStr)

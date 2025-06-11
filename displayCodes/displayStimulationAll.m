@@ -551,7 +551,7 @@ for c=1:2
             for k=1:length(oriVals)
                 for l=1:length(conVals)
                     for day=1:length(dates{1,c})
-                        dataTF = dir(fullfile(folderIn{1,c},append(num2str(sfVals(j)),'sf','_',num2str(oriVals(k)),'Ori','_',num2str(conVals(l)),'con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
+                        dataTF = dir(fullfile(folderIn{1,c},append(num2str(sfVals(j)),'SF','_',num2str(oriVals(k)),'Ori','_',num2str(conVals(l)),'Con','_',protocols{1,c}{day,iProt},'_',dates{1,c}{1,day},'*TF.mat')));
                         % Loading the TF file
                         d2= load(fullfile(folderIn{1,c},dataTF.name)); % DataStructure(field).name
                         rawTF(day,:,:) = (d2.TFDeltaPow);
